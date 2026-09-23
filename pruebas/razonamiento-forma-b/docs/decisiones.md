@@ -71,7 +71,7 @@ La ponderación sigue la convención Terman-Merrill según se asumió; falta con
 - Al recargar, la prueba en curso se reanuda sola en la misma pregunta. Si la versión de los reactivos cambió (`FORM_ID`), se archiva y el aplicador decide.
 - Si la prueba se abre en otra pestaña, la anterior se bloquea.
 - Historial de las últimas 30 aplicaciones en `rgFormaB.v1.historial`.
-- Menú oculto del aplicador: mantener presionado 3 s el título de la bienvenida, de la parte o de la pantalla de tiempo terminado. Ofrece cancelar la aplicación y, servida desde Pages, cancelar y volver al menú de pruebas. En ambos casos la aplicación se archiva como cancelada antes de limpiar el estado.
+- Menú del aplicador: se abre manteniendo presionado 3 s el botón visible "Salir" (arriba a la derecha en preguntas y revisión, abajo en bienvenida, introducción de cada parte y tiempo terminado) o el título de esas pantallas. Un toque corto en "Salir" solo muestra el aviso de mantenerlo presionado; mientras se presiona, el botón se llena. Ofrece cancelar la aplicación y, servida desde Pages, cancelar y volver al menú de pruebas. En ambos casos la aplicación se archiva como cancelada antes de limpiar el estado.
 - Banner rojo fijo si falla el guardado; aviso si el navegador no permite guardar o si es un navegador embebido de otra app.
 
 ## Prompt de calificación

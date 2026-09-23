@@ -16,7 +16,7 @@ La raíz https://demeneghi.github.io/pruebas-reclutamiento/ muestra el menú de 
 2. El aplicador elige la prueba, captura los datos del candidato y el tipo de puesto, y entrega el dispositivo.
 3. Al terminar, el aplicador mantiene presionado el botón de resultados y copia el prompt.
 4. Para un candidato nuevo, en el menú mantén presionado "Preparar para un candidato nuevo": lo pendiente se archiva en el historial y todas las pruebas abren en la pantalla de captura.
-5. Para salir de una prueba a medias, mantén presionado 3 s el título de la parte y elige "Volver al menú de pruebas". La aplicación queda cancelada en el historial.
+5. Para salir de una prueba a medias, mantén presionado 3 s el botón "Salir" y elige "Volver al menú de pruebas". La aplicación queda cancelada en el historial.
 
 ## Estructura
 

@@ -135,24 +135,34 @@ async def main():
 
             historial = "JSON.parse(localStorage.getItem('rgFormaB.v1.historial') || '[]')"
 
-            # Menú oculto de la prueba: cancelar y volver al menú de pruebas.
+            # Botón visible "Salir": en todas las pantallas de la prueba; un toque corto solo avisa;
+            # mantenido 3 s abre el menú del aplicador, que cancela y vuelve al menú de pruebas.
             await pg.goto(raiz + "vacia.html")
             await pg.evaluate("localStorage.clear()")
             await pg.goto(raiz + "razonamiento-forma-b/")
             await pg.fill("#f-nombre", "Eva Soto")
             await pg.click("[data-act=mode][data-v=ext]")
             await pg.click("[data-act=toWelcome]")
+            comprobar(await pg.locator(".salir").count() == 1, "la bienvenida no tiene el botón Salir")
             await pg.click("[data-act=begin]")
+            comprobar(await pg.locator(".salir").count() == 1, "la introducción de la parte no tiene el botón Salir")
             await pg.click("[data-act=startSeries]")
-            await mantener(pg, ".part", 3200)
+            caja = await pg.locator(".bar .salir").bounding_box()
+            comprobar(caja and caja["height"] >= 56 and caja["width"] >= 56, f"el botón Salir de la barra mide menos de 56 px: {caja}")
+            await mantener(pg, ".bar .salir", 300)
+            comprobar(await pg.locator(".modal").count() == 0, "un toque corto en Salir abrió el menú")
+            comprobar("mantén presionado 3 segundos" in await pg.inner_text("#toast"), "un toque corto en Salir no avisó cómo usarlo")
+            await pg.click("[data-act=toReview]")
+            comprobar(await pg.locator(".bar .salir").count() == 1, "la revisión de la parte no tiene el botón Salir")
+            await mantener(pg, ".bar .salir", 3200)
             await pg.click(".modal >> text=Volver al menú de pruebas")
             await pg.click(".modal >> text=Sí, cancelar y volver")
             await pg.wait_for_url(raiz)
             await pg.wait_for_timeout(300)
-            comprobar(pg.url == raiz and await pg.locator(".prueba").count() == len(carpetas), "el menú oculto no volvió al menú de pruebas")
+            comprobar(pg.url == raiz and await pg.locator(".prueba").count() == len(carpetas), "Salir no volvió al menú de pruebas")
             comprobar(await pg.evaluate("localStorage.getItem('rgFormaB.v1') === null"), "al volver al menú quedó la aplicación en curso")
             h = await pg.evaluate(historial)
-            comprobar(any(x["cand"]["nombre"] == "Eva Soto" and x["status"] == "cancelada" for x in h), "la aplicación cancelada desde el menú oculto no quedó en el historial")
+            comprobar(any(x["cand"]["nombre"] == "Eva Soto" and x["status"] == "cancelada" for x in h), "la aplicación cancelada con Salir no quedó en el historial")
 
             # Preparar para un candidato nuevo sin nada pendiente: no cambia nada.
             antes = len(h)
@@ -237,7 +247,7 @@ async def main():
     if fallas:
         print("FALLAS:\n- " + "\n- ".join(fallas))
         sys.exit(1)
-    print(f"OK: menú con {len(carpetas)} prueba(s), ida y vuelta, reanudación, menú oculto y preparar candidato nuevo")
+    print(f"OK: menú con {len(carpetas)} prueba(s), ida y vuelta, reanudación, botón Salir y preparar candidato nuevo")
 
 
 asyncio.run(main())

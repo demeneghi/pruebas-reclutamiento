@@ -68,6 +68,7 @@ label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var
 /* header during test */
 .bar{position:sticky;top:0;z-index:5;background:var(--bar);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 16px 10px;padding-top:calc(10px + env(safe-area-inset-top,0px));margin-top:calc(-1 * env(safe-area-inset-top,0px))}
 .bar-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.bar-der{display:flex;align-items:center;gap:8px;flex:0 0 auto}
 .part{font-weight:700;font-size:.9em}
 .part small{font-weight:400;color:var(--ink2);margin-left:.4em}
 .timer{font-variant-numeric:tabular-nums;font-weight:700;font-size:.95em;padding:4px 12px;border-radius:999px;border:2px solid var(--line);background:var(--sheet);min-width:74px;text-align:center}
@@ -182,6 +183,12 @@ main.q{flex:1;padding:18px 16px 12px}
 .hold{position:relative;overflow:hidden;width:100%;min-height:64px;border-radius:14px;border:2px solid var(--ink);background:var(--sheet);font-weight:700}
 .hold i{position:absolute;inset:0;width:0;background:var(--pencil-soft);transition:none}
 .hold span{position:relative}
+/* salir: visible para el aplicador; solo responde a una pulsación de 3 s */
+.salir{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:56px;min-width:56px;padding:0 14px;border-radius:14px;border:2px solid var(--line);background:var(--sheet);color:var(--ink2);font-weight:700;font-size:.85em;touch-action:none}
+.salir i{position:absolute;inset:0;width:0;background:var(--pencil-soft)}
+.salir svg,.salir span{position:relative}
+.salir svg{width:20px;height:20px}
+.salir-fila{display:flex;justify-content:flex-end;margin-top:18px}
 
 /* results */
 table.sum{width:100%;border-collapse:collapse;font-size:.85em;font-variant-numeric:tabular-nums}
