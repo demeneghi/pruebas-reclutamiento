@@ -14,6 +14,7 @@
 1. Pantalla del aplicador: nombre, edad, escolaridad, puesto, tipo de puesto (obligatorio), rancho o área (opcional), aplicador, con o sin tiempo límite.
 2. Bienvenida del candidato: logotipo animado, saludo y cuatro reglas (partes, ejemplo, tiempo, no regresar).
 3. Por cada serie: introducción con ejemplo interactivo que no cuenta, preguntas, revisión con cuadrícula y cierre. Una serie cerrada no se puede reabrir.
+   - Pantalla completa: se pide sola al tocar "Comenzar". Si el candidato sale de ella, la introducción de cada serie muestra el botón "Pantalla completa" para volver; no aparece durante las preguntas para no distraer con el reloj corriendo. Donde el navegador no la permite (Safari de iPhone, o una página incrustada que la bloquee) el botón no se muestra.
 4. Pantalla final. Los resultados se abren manteniendo presionado un botón 1.5 s.
 5. Resultados: tabla resumen y prompt (copiar, compartir, descargar .txt).
 

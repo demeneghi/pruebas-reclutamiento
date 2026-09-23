@@ -21,6 +21,15 @@ async def main():
         pg = await nav.new_page(viewport={"width": 390, "height": 844}, has_touch=True)
         pg.on("pageerror", lambda e: errores.append(str(e)))
         await iniciar(pg, "Flujo completo")
+        await pg.evaluate("document.fullscreenElement && document.exitFullscreen()")
+        await pg.wait_for_timeout(300)
+        if not await pg.locator("#fsbtn").is_visible():
+            fallas.append("sin botón de pantalla completa al salir de ella")
+        else:
+            await pg.click("#fsbtn")
+            await pg.wait_for_timeout(300)
+            if await pg.locator("#fsbtn").is_visible() or not await pg.evaluate("!!document.fullscreenElement"):
+                fallas.append("el botón no activó la pantalla completa")
         for sid in SERIES:
             await pg.click("[data-act=startSeries]")
             for i, k in enumerate(CLAVE[sid]):
