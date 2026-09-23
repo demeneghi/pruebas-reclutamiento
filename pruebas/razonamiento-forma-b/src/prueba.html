@@ -455,7 +455,8 @@ function intro(){
   '<p>'+esc(m.howto)+'</p>'+
   '<div class="facts"><div class="fact"><b>'+ITEMS[m.id].length+'</b> preguntas</div>'+(S.timed?'<div class="fact">Tiempo: <b>'+fmtT(timeFor(m))+'</b></div>':'')+'</div>'+
   '<div class="exbox" id="exbox">'+exampleHTML()+'</div>'+
-  '<button class="btn block" data-act="startSeries">Empezar parte '+(S.si+1)+'</button></div>';
+  '<button class="btn block" data-act="startSeries">Empezar parte '+(S.si+1)+'</button>'+
+  (fsEnabled()?'<button class="btn quiet block" id="fsbtn" data-act="fullscreen" style="margin-top:8px'+(fsActive()?';display:none':'')+'">Pantalla completa</button>':'')+'</div>';
 }
 function exampleHTML(){
   const m=meta(), e=m.example;
@@ -727,6 +728,7 @@ document.addEventListener("click",e=>{
     case "logo": b.replaceWith(b.cloneNode(true)); break;
     case "begin": S.startedAt=now();S.si=0;S.phase="intro";save();render();fullscreen();break;
     case "startSeries": startSeries();break;
+    case "fullscreen": fullscreen();break;
     case "exCheck": EX.checked=true;$("#exbox").innerHTML=exampleHTML();break;
     case "pick":{
       const val=+v;
@@ -849,7 +851,13 @@ async function download(){
 let wl=null;
 async function wake(){try{if("wakeLock" in navigator&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null;});}}catch(e){}}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&S.phase!=="setup")wake();tick();});
-function fullscreen(){const d=document.documentElement;try{if(d.requestFullscreen&&!document.fullscreenElement)d.requestFullscreen().catch(()=>{});}catch(e){}}
+/* Pantalla completa: iPad usa el prefijo webkit; en iPhone y dentro de marcos que no la permiten no existe y el botón no aparece */
+function fsEnabled(){return !!(document.fullscreenEnabled||document.webkitFullscreenEnabled);}
+function fsActive(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
+function fullscreen(){const d=document.documentElement;if(fsActive())return;try{const p=d.requestFullscreen?d.requestFullscreen():d.webkitRequestFullscreen?d.webkitRequestFullscreen():null;if(p&&p.catch)p.catch(()=>{});}catch(e){}}
+function fsSync(){const b=$("#fsbtn");if(b)b.style.display=fsActive()?"none":"";}
+document.addEventListener("fullscreenchange",fsSync);
+document.addEventListener("webkitfullscreenchange",fsSync);
 window.addEventListener("beforeunload",e=>{if(["intro","item","review","timeout"].includes(S.phase)){e.preventDefault();e.returnValue="";}});
 
 render();
