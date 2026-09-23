@@ -8,12 +8,12 @@ Pruebas psicométricas digitales para aplicar en tablet o teléfono. Cada prueba
 |---|---|---|
 | Razonamiento General, Forma B | https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/ | `pruebas/razonamiento-forma-b/src/prueba.html` |
 
-La raíz https://demeneghi.github.io/pruebas-reclutamiento/ redirige a la prueba.
+La raíz https://demeneghi.github.io/pruebas-reclutamiento/ muestra el menú de pruebas. Si en ese dispositivo hay una aplicación a medias, la reabre sola.
 
 ## Uso rápido
 
-1. Abre el enlace de la prueba en Chrome o Safari, no dentro de Telegram, WhatsApp u otra app. Usa siempre el mismo enlace en cada dispositivo: el historial se guarda por sitio.
-2. El aplicador captura los datos del candidato y el tipo de puesto, y entrega el dispositivo.
+1. Abre la raíz del sitio en Chrome o Safari, no dentro de Telegram, WhatsApp u otra app. Usa siempre el mismo enlace en cada dispositivo: el historial se guarda por sitio.
+2. El aplicador elige la prueba, captura los datos del candidato y el tipo de puesto, y entrega el dispositivo.
 3. Al terminar, el aplicador mantiene presionado el botón de resultados y copia el prompt.
 
 ## Estructura
@@ -27,7 +27,7 @@ La raíz https://demeneghi.github.io/pruebas-reclutamiento/ redirige a la prueba
 | `pruebas/<prueba>/docs/` | Decisiones, correcciones y pendientes |
 | `pruebas/<prueba>/tests/` | Pruebas de extremo a extremo con Playwright |
 | `marca/` | Logotipo original, SVG vectorizado y script que lo genera |
-| `sitio/` | Página raíz de GitHub Pages |
+| `sitio/` | Menú de pruebas en la raíz de GitHub Pages y su prueba automatizada |
 | `.github/workflows/pages.yml` | Publicación en GitHub Pages |
 
 ## Publicación

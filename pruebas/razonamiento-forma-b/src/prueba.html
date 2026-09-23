@@ -74,6 +74,9 @@ label.f input:focus,label.f select:focus{border-color:var(--blue);outline:none}
 .hist button{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:54px;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);text-align:left}
 .hist button span{color:var(--ink2);font-size:.85em}
 [data-hold]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.toprow{display:flex;align-items:center;justify-content:space-between;gap:4px 10px;flex-wrap:wrap;margin:-10px 0 4px}
+.toprow p{margin:0}
+.toprow a.btn{text-decoration:none;margin:0 -12px;color:var(--blue)}
 
 /* header during test */
 .bar{position:sticky;top:0;z-index:5;background:var(--bar);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 16px 10px;padding-top:calc(10px + env(safe-area-inset-top,0px));margin-top:calc(-1 * env(safe-area-inset-top,0px))}
@@ -224,6 +227,9 @@ const TEST_NAME = "Prueba de Razonamiento General, Forma B";
 const COMPANY = "Amador Russell";
 const COMPANY_LEGAL = "Amador Russell SPR de RL";
 const COMPANY_DESC = "empresa agrícola productora de piña MD2 en Veracruz, México";
+/* Carpeta en GitHub Pages. Solo servida desde ahí se ofrece volver al menú de pruebas de la raíz. */
+const CARPETA = "razonamiento-forma-b";
+const MENU = new RegExp("/"+CARPETA+"/(index\\.html)?$").test(location.pathname);
 /* Modalidades de tiempo, fijas por tipo de puesto (no por candidato) */
 const MODES = {
   std:{label:"Estándar",  puesto:"Administrativo o técnico", factor:1},
@@ -399,7 +405,7 @@ function setup(){
   const warn = warnApp + (STORAGE_OK ? "" : '<div class="notice bad"><p><b>Este navegador no permite guardar el avance.</b> Si la página se recarga o se cierra, la prueba se pierde. Abre el archivo en Chrome o usa el enlace publicado.</p></div>');
   const hist = archiveLoad();
   const histHTML = hist.length ? '<h2>Resultados guardados en este dispositivo</h2><div class="hist">'+hist.map(h=>'<button data-act="openArch" data-v="'+esc(h.id)+'"><b>'+esc(h.cand&&h.cand.nombre||"Sin nombre")+'</b><span>'+new Date(h.startedAt||h.savedAt||0).toLocaleDateString("es-MX",{day:"numeric",month:"short",year:"numeric"})+', '+esc(h.status||"")+'</span></button>').join("")+'</div><button class="btn quiet" data-act="clearArch">Borrar historial</button>' : "";
-  return '<div class="sheet">'+brand()+'<p class="muted small">Pantalla para quien aplica la prueba</p><h1>'+esc(TEST_NAME)+'</h1>'+warn+resume+
+  return '<div class="sheet">'+brand()+'<div class="toprow"><p class="muted small">Pantalla para quien aplica la prueba</p>'+(MENU?'<a class="btn quiet" href="../">Cambiar de prueba</a>':'')+'</div><h1>'+esc(TEST_NAME)+'</h1>'+warn+resume+
   '<p class="muted">Llena los datos del candidato y entrega el dispositivo. Con tiempo límite, la prueba dura unos '+Math.round(totalFor("std")/60)+' minutos en modalidad estándar y '+Math.round(totalFor("ext")/60)+' en extendida.</p>'+
   '<label class="f"><span>Nombre completo del candidato</span><input id="f-nombre" autocomplete="off" value="'+esc(c.nombre)+'"></label>'+
   '<div class="row"><label class="f" style="flex:1 1 120px"><span>Edad</span><input id="f-edad" inputmode="numeric" maxlength="2" value="'+esc(c.edad)+'"></label>'+

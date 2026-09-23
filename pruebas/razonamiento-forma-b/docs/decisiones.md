@@ -67,7 +67,8 @@ Incluye rol, contexto de la empresa, datos de la aplicación, modalidad y límit
 
 - GitHub Pages: https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/. El workflow `.github/workflows/pages.yml` publica solo `src/prueba.html`; `datos/`, `fuentes/` y `docs/` no llegan al sitio. La página lleva `noindex` para que los buscadores no la listen.
 - El sitio de Pages es público aunque el repositorio sea privado. La clave viaja ofuscada en base64 dentro del HTML, aceptable solo para aplicación presencial con el dispositivo en manos del aplicador.
-- Todas las páginas de Pages de la cuenta comparten el origen `demeneghi.github.io` y, por tanto, el localStorage: no publicar en esa cuenta páginas de terceros ni código que lea el almacenamiento.
+- Todas las páginas de Pages de la cuenta comparten el origen `demeneghi.github.io` y, por tanto, el localStorage: no publicar en esa cuenta páginas de terceros ni código que lea el almacenamiento. Única excepción: el menú de la raíz (`sitio/index.html`) consulta la fase guardada en `rgFormaB.v1` y su respaldo para reabrir una aplicación en curso; no escribe ni muestra datos del candidato.
+- La pantalla del aplicador ofrece "Cambiar de prueba" (enlace a `../`) solo cuando la ruta termina en `/razonamiento-forma-b/` (constante `CARPETA`); en el artefacto o como archivo local no aparece.
 - Artefacto privado de Claude. Las descargas usan la capacidad `claude.use("downloads")` y, fuera de Claude, un enlace de descarga normal.
 - El historial depende del dominio: un dispositivo que aplicó desde el artefacto no ve ese historial en Pages, y viceversa. Cada dispositivo usa un solo enlace.
 - Alternativas evaluadas: Netlify Drop, Cloudflare Pages y Vercel Drop.
