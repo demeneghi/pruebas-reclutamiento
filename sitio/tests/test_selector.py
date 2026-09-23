@@ -35,9 +35,9 @@ async def mantener(pg, selector, ms):
     caja = await elemento.bounding_box()
     await pg.mouse.move(caja["x"] + 20, caja["y"] + 10)
     await pg.mouse.down()
-    await pg.wait_for_timeout(ms)
+    await pg.clock.run_for(ms)
     await pg.mouse.up()
-    await pg.wait_for_timeout(200)
+    await pg.clock.run_for(200)
 
 
 def servir(raiz):
@@ -63,6 +63,8 @@ async def main():
         async with async_playwright() as p:
             nav = await p.chromium.launch()
             ctx = await nav.new_context(viewport={"width": 390, "height": 844}, has_touch=True)
+            # Reloj simulado: las pulsaciones largas y el avance automático se adelantan sin dormir.
+            await ctx.clock.install()
             # Sin Google Fonts: el menú debe funcionar igual con la fuente del sistema y sin depender de internet.
             await ctx.route("https://fonts.googleapis.com/**", lambda r: r.abort())
             await ctx.route("https://fonts.gstatic.com/**", lambda r: r.abort())
@@ -178,7 +180,7 @@ async def main():
             await pg.click("[data-act=begin]")
             await pg.click("[data-act=startSeries]")
             await pg.click('[data-act=pick][data-ctx=real][data-v="3"]')
-            await pg.wait_for_timeout(400)
+            await pg.clock.run_for(400)
             await pg.goto(raiz + "vacia.html")
             estado = await pg.evaluate("localStorage.getItem('rgFormaB.v1')")
             await pg.evaluate("localStorage.removeItem('rgFormaB.v1'); localStorage.removeItem('rgFormaB.v1.respaldo')")
