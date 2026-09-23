@@ -710,13 +710,14 @@ function scheduleNext(ms){
 }
 
 /* ---- Revisión de la parte ---- */
+function etiquetaFinParte(){return S.si<META.length-1?"Continuar con la parte "+(S.si+2):"Terminar la prueba";}
 function review(){
   const m=meta(), arr=ansArr(m.id), miss=arr.filter(v=>!isAnswered(m,v)).length;
   return header()+'<main class="q"><h1>Revisa la parte '+(S.si+1)+'</h1>'+
   '<p>'+(miss?'Te faltan <b>'+miss+'</b> '+(miss===1?"pregunta":"preguntas")+'. Toca un número para ir a ella.':'Contestaste todas. Toca un número si quieres cambiar alguna.')+'</p>'+
   '<div class="grid">'+arr.map((v,i)=>'<button class="'+(isAnswered(m,v)?"done":"")+'" data-act="goto" data-v="'+i+'" aria-label="Pregunta '+(i+1)+(isAnswered(m,v)?", contestada":", sin contestar")+'">'+(i+1)+'</button>').join("")+'</div>'+
   '<p class="small muted">Azul: contestada. Blanco: sin contestar.</p></main>'+
-  '<nav class="foot rv"><button class="btn ghost" data-act="goto" data-v="'+(arr.length-1)+'">Volver</button><button class="btn" data-act="endSeries">Terminar parte '+(S.si+1)+'</button></nav>';
+  '<nav class="foot rv"><button class="btn ghost" data-act="goto" data-v="'+(arr.length-1)+'">Volver</button><button class="btn" data-act="endSeries">'+etiquetaFinParte()+'</button></nav>';
 }
 function timeout(){
   return '<div class="sheet"><h1 data-hold="menu">Se terminó el tiempo de la parte '+(S.si+1)+'</h1><p>Tus respuestas quedaron guardadas. Sigue con la siguiente parte.</p><button class="btn block" data-act="nextSeries">Continuar</button>'+salirFila()+'</div>';
@@ -963,8 +964,8 @@ document.addEventListener("click",e=>{
     case "endSeries":{
       const arr=ansArr(m.id),miss=arr.filter(x=>!isAnswered(m,x)).length;
       const go=()=>finishSeries(false);
-      if(miss)modal("Te faltan "+miss+" "+(miss===1?"pregunta":"preguntas"),"Si terminas la parte ya no podrás regresar a ella.",[{label:"Seguir contestando",cls:"ghost"},{label:"Terminar parte",fn:go}]);
-      else modal("¿Terminar la parte "+(S.si+1)+"?","Ya no podrás regresar a ella.",[{label:"Revisar otra vez",cls:"ghost"},{label:"Terminar parte",fn:go}]);
+      if(miss)modal("Te faltan "+miss+" "+(miss===1?"pregunta":"preguntas"),"Si terminas la parte ya no podrás regresar a ella.",[{label:"Seguir contestando",cls:"ghost"},{label:etiquetaFinParte(),fn:go}]);
+      else modal("¿Terminar la parte "+(S.si+1)+"?","Ya no podrás regresar a ella.",[{label:"Revisar otra vez",cls:"ghost"},{label:etiquetaFinParte(),fn:go}]);
       break;}
     case "nextSeries": nextSeries();break;
     case "copy": copyText(S._prompt);break;
