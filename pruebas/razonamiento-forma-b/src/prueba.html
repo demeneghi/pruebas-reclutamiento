@@ -152,6 +152,15 @@ main.q{flex:1;padding:18px 16px 12px}
 .fb{margin-top:12px;padding:12px 14px;border-radius:12px;font-weight:700}
 .fb.ok{background:var(--ok-soft);color:var(--ok)}
 .fb.no{background:var(--bad-soft);color:var(--bad)}
+/* welcome */
+.lead{color:var(--ink2);margin-bottom:18px}
+.rules{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.rules li{display:flex;align-items:center;gap:14px;padding:10px 14px;border:1px solid var(--line);border-radius:var(--r);background:var(--sheet)}
+.rules .ico{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:2px solid var(--pencil);background:var(--pencil-soft);display:grid;place-items:center}
+.rules .ico svg{width:24px;height:24px}
+.rules b{display:block;line-height:1.25}
+.rules small{display:block;color:var(--ink2);font-size:.88em;line-height:1.35;margin-top:2px}
+.ask{text-align:center;color:var(--ink2);font-size:.9em;margin:0 0 12px}
 .facts{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 18px}
 .fact{border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--sheet);font-size:.9em}
 .fact b{font-size:1.1em}
@@ -388,17 +397,28 @@ function readSetup(){
 }
 
 /* ---- Bienvenida candidato ---- */
+const ICO={
+  partes:'<circle cx="5" cy="6" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="5" cy="18" r="1.8"/><path d="M10 6h10M10 12h10M10 18h10"/>',
+  ejemplo:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  tiempo:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  cierre:'<rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5v-3a4 4 0 0 1 8 0v3"/>'
+};
+function rule(k,t,s){
+  return '<li><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICO[k]+'</svg></span><div><b>'+t+'</b><small>'+s+'</small></div></li>';
+}
 function welcome(){
   const first=(S.cand.nombre||"").split(/\s+/)[0];
   const total=totalFor();
   return '<div class="sheet">'+brand()+'<h1 data-hold="menu">Hola'+(first?", "+esc(first):"")+'</h1>'+
-  '<p>Gracias por tu interés en trabajar en '+COMPANY+'. Esta prueba forma parte del proceso de selección y nos ayuda a conocer cómo razonas; no se trata de conocimientos de un oficio.</p>'+
-  '<p>Esta prueba tiene <b>10 partes</b> cortas. No necesitas papel ni lápiz: todo se contesta tocando la pantalla.</p>'+
-  '<p>Antes de cada parte verás un <b>ejemplo para practicar</b>. El ejemplo no cuenta.</p>'+
-  (S.timed?'<p>Cada parte tiene un <b>tiempo límite</b> que verás arriba a la derecha. En total son unos '+Math.round(total/60)+' minutos. Contesta primero las que sepas.</p>':'<p>No hay tiempo límite, pero trata de avanzar a buen ritmo.</p>')+
-  '<p>Puedes cambiar una respuesta mientras sigas en esa parte. Cuando termines una parte, <b>ya no podrás regresar</b> a ella.</p>'+
-  '<p>Si tienes una duda sobre cómo contestar, pregunta ahora a quien aplica la prueba.</p>'+
-  '<button class="btn block" data-act="begin" style="margin-top:8px">Comenzar</button></div>';
+  '<p class="lead">Gracias por tu interés en '+COMPANY+'. Esta prueba mide cómo razonas, no lo que sabes de un oficio.</p>'+
+  '<ul class="rules">'+
+  rule("partes","10 partes cortas","Todo se contesta tocando la pantalla.")+
+  rule("ejemplo","Primero, un ejemplo","Cada parte empieza con uno para practicar. No cuenta.")+
+  (S.timed?rule("tiempo","Unos "+Math.round(total/60)+" minutos en total","Cada parte tiene su tiempo; lo verás arriba a la derecha. Contesta primero las que sepas."):rule("tiempo","Sin tiempo límite","Trata de avanzar a buen ritmo."))+
+  rule("cierre","Al terminar una parte, ya no puedes regresar","Mientras sigas en ella, puedes cambiar tus respuestas.")+
+  '</ul>'+
+  '<p class="ask">¿Tienes dudas? Pregunta ahora a quien aplica la prueba.</p>'+
+  '<button class="btn block" data-act="begin">Comenzar</button></div>';
 }
 
 /* ---- Intro de cada parte ---- */
