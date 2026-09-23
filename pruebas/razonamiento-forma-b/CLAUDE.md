@@ -4,6 +4,7 @@
 
 - `src/prueba.html` es la fuente de verdad: todo incrustado (reactivos, clave ofuscada en base64, fuentes).
 - `datos/reactivos.json` y `datos/clave.json` son extracción legible del HTML. Todavía no hay build que los inyecte: si cambias un reactivo, cámbialo en ambos lados. Crear ese build es el primer pendiente técnico.
+- Publicada en GitHub Pages: https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/. Se despliega sola al cambiar `src/prueba.html` en `main`.
 - Publicada como artefacto privado: https://claude.ai/artifact/4hqbR3TMwNPF7cA9rhMTuE. Las descargas usan `claude.use("downloads")` dentro de Claude y un enlace normal fuera.
 
 ## Documentos

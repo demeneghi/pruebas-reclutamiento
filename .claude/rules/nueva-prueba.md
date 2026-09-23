@@ -8,3 +8,4 @@
 6. Usa claves de localStorage propias de la prueba para que las pruebas no compartan estado.
 7. Escribe las pruebas automatizadas de `pruebas-automatizadas.md`.
 8. Agrega la prueba al índice del `CLAUDE.md` raíz y del `README.md`.
+9. La aplicación se llama `src/prueba.html`: así el workflow de Pages la publica sola en `<nombre>/`. Con dos o más pruebas, cambia `sitio/index.html` de redirección a menú de pruebas.

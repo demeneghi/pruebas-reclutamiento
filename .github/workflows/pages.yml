@@ -1,0 +1,50 @@
+name: Publicar en GitHub Pages
+
+# Publica solo la aplicación de cada prueba. Nunca se suben datos/, fuentes/ ni docs/:
+# el sitio de Pages es público aunque el repositorio sea privado.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "pruebas/*/src/prueba.html"
+      - "sitio/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Armar sitio
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          cp sitio/index.html _site/index.html
+          for app in pruebas/*/src/prueba.html; do
+            prueba=$(basename "$(dirname "$(dirname "$app")")")
+            mkdir -p "_site/$prueba"
+            cp "$app" "_site/$prueba/index.html"
+            echo "Publicada: $prueba/"
+          done
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+
+      - id: despliegue
+        uses: actions/deploy-pages@v5

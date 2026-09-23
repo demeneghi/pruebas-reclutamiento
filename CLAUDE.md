@@ -14,9 +14,13 @@ Las reglas del repositorio están en `.claude/rules/` y aplican a todas las prue
 
 | Carpeta | Prueba | Estado |
 |---|---|---|
-| `pruebas/razonamiento-forma-b/` | Razonamiento General, Forma B (tipo Terman-Merrill, 10 series, 165 reactivos) | En uso; publicada como artefacto privado de Claude |
+| `pruebas/razonamiento-forma-b/` | Razonamiento General, Forma B (tipo Terman-Merrill, 10 series, 165 reactivos) | En uso; publicada en GitHub Pages (https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/) y como artefacto privado de Claude |
 
 Cada carpeta tiene su propio `CLAUDE.md` con el contexto específico.
+
+## Publicación
+
+`.github/workflows/pages.yml` publica en GitHub Pages cada `pruebas/<prueba>/src/prueba.html` como `<prueba>/index.html`, más `sitio/index.html` en la raíz. Nada más del repositorio llega al sitio.
 
 ## Comandos
 
