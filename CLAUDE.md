@@ -37,7 +37,15 @@ Después de cambiar cualquiera de esas fuentes, corre `python herramientas/const
 
 `.github/workflows/pages.yml` publica en GitHub Pages cada `pruebas/<prueba>/src/prueba.html` como `<prueba>/index.html`, más `sitio/index.html` en la raíz. Nada más del repositorio llega al sitio.
 
-`sitio/index.html` es el menú de pruebas: una tarjeta por prueba, escrita a mano. Si el dispositivo tiene una aplicación en curso, la raíz la reabre sola. "Preparar para un candidato nuevo" (pulsación larga) archiva lo pendiente en el historial de cada prueba y limpia su estado; nunca borra el historial. Cada prueba define `CARPETA` para ofrecer "Cambiar de prueba" en la pantalla del aplicador y "Volver al menú de pruebas" en el menú del aplicador (botón "Salir" mantenido 3 s) cuando se sirve desde Pages.
+`sitio/index.html` es el menú de pruebas y el centro del flujo en Pages:
+
+1. Captura una vez los datos del candidato y crea la sesión (`motor/sesion.js`, compartida con las pruebas).
+2. Muestra una tarjeta por prueba, escrita a mano, con su estado para el candidato, y su nombre fijo arriba.
+3. La prueba abierta desde ahí toma al candidato de la sesión y empieza en la bienvenida; al terminar o cancelar registra su resultado y su prompt en la sesión, y el aplicador vuelve al menú con pulsación larga.
+4. Con pulsación larga, el menú muestra resultados, incidencias por prueba y un solo prompt con todas las pruebas.
+5. "Terminar con este candidato" archiva la sesión en el historial de candidatos y deja la captura lista para el siguiente.
+
+Si el dispositivo tiene una aplicación en curso, la raíz la reabre sola. Una prueba abierta en Pages sin sesión manda al menú. `CARPETA` identifica la prueba en la sesión; fuera de Pages (archivo o artefacto) la prueba conserva su captura y sus resultados propios.
 
 ## Comandos
 

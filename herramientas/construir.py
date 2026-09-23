@@ -6,11 +6,14 @@ Piezas, en el orden en que quedan dentro del HTML:
 - pruebas/<prueba>/src/config.js: lo propio de la prueba (nombre, claves, series, textos del prompt).
 - marca/logo-amador-russell.svg: logotipo animado (constante LOGO).
 - pruebas/<prueba>/datos/reactivos.json y clave.json: reactivos (ITEMS) y clave ofuscada (KEY).
+- motor/sesion.js: sesión del candidato compartida con el menú de pruebas.
 - motor/motor.js: persistencia, flujo, calificación, prompt y eventos.
+
+También copia motor/sesion.js en la región marcada de sitio/index.html (el menú de pruebas).
 
 Uso:
     python herramientas/construir.py              # regenera todas las pruebas
-    python herramientas/construir.py --verificar  # falla si algún prueba.html no está al día
+    python herramientas/construir.py --verificar  # falla si algún archivo generado no está al día
 """
 import base64
 import html
@@ -21,6 +24,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 MOTOR = RAIZ / "motor"
+MENU = RAIZ / "sitio" / "index.html"
+REGION = re.compile(r"(/\* ==== Inicio de motor/sesion\.js[^\n]*\n)(.*?)(/\* ==== Fin de motor/sesion\.js ==== \*/)", re.S)
 LOGO = RAIZ / "marca" / "logo-amador-russell.svg"
 
 
@@ -63,6 +68,7 @@ def construir(carpeta):
         "/* Generado por herramientas/construir.py. No lo edites a mano: cambia motor/, src/config.js, datos/ o marca/ y vuelve a construir. */",
         config.rstrip("\n"),
         datos,
+        leer(MOTOR / "sesion.js").rstrip("\n"),
         leer(MOTOR / "motor.js").rstrip("\n"),
     ])
     if re.search(r"</script", script, re.I):
@@ -76,15 +82,23 @@ def construir(carpeta):
     return re.sub(r"\{\{(TITULO|ESTILOS|SCRIPT)\}\}", lambda m: piezas[m.group(1)], plantilla).rstrip("\n") + "\n"
 
 
+def construir_menu():
+    actual = leer(MENU)
+    if len(REGION.findall(actual)) != 1:
+        raise SystemExit("sitio/index.html debe tener una sola región de motor/sesion.js entre sus marcas")
+    return REGION.sub(lambda m: m.group(1) + leer(MOTOR / "sesion.js") + m.group(3), actual)
+
+
 def main():
     verificar = "--verificar" in sys.argv[1:]
     carpetas = sorted(p.parent.parent for p in (RAIZ / "pruebas").glob("*/src/config.js"))
     if not carpetas:
         raise SystemExit("no hay pruebas con src/config.js")
     viejas = []
-    for carpeta in carpetas:
-        destino = carpeta / "src" / "prueba.html"
-        nuevo = construir(carpeta)
+    objetivos = [(carpeta / "src" / "prueba.html", lambda c=carpeta: construir(c)) for carpeta in carpetas]
+    objetivos.append((MENU, construir_menu))
+    for destino, generar in objetivos:
+        nuevo = generar()
         actual = leer(destino) if destino.exists() else None
         if verificar:
             if actual != nuevo:
@@ -96,10 +110,10 @@ def main():
             print("Sin cambios:", destino.relative_to(RAIZ).as_posix())
     if viejas:
         print("No coinciden con su construcción:\n- " + "\n- ".join(viejas))
-        print("Se editó prueba.html a mano o falta construir. Pasa el cambio a motor/, src/config.js o datos/ y corre: python herramientas/construir.py")
+        print("Se editó un archivo generado a mano o falta construir. Pasa el cambio a motor/, src/config.js o datos/ y corre: python herramientas/construir.py")
         sys.exit(1)
     if verificar:
-        print(f"OK: {len(carpetas)} prueba(s) al día con su construcción")
+        print(f"OK: {len(carpetas)} prueba(s) y el menú al día con su construcción")
 
 
 if __name__ == "__main__":

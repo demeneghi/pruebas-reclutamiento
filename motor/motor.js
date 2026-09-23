@@ -112,6 +112,22 @@ let RESUMED = false;
   if(S.phase==="done") archivePut(S);
 })();
 if(RESUMED) save();
+/* ====== Sesión del menú ======
+   Servida desde Pages, la prueba toma al candidato de la sesión que capturó el menú y empieza en la bienvenida.
+   Sin sesión, o si esta prueba ya se aplicó en la sesión, regresa al menú. Abierta como archivo o artefacto
+   (sin menú) o sin almacenamiento, conserva su pantalla de captura propia. */
+const SES = MENU&&STORAGE_OK ? sesionLeer() : null;
+let AL_MENU = false;
+(function conSesion(){
+  if(!MENU||!STORAGE_OK||S._resume) return;
+  /* Una aplicación terminada de otra sesión ya está en el historial: se limpia para el candidato actual. */
+  if(RESUMED&&S.phase==="done"&&(!SES||S.sesion!==SES.id)){clearStore();S=blank();RESUMED=false;}
+  if(RESUMED) return;
+  const previa=SES&&SES.pruebas[CARPETA];
+  if(!SES||(previa&&previa.estado==="terminada")){AL_MENU=true;return;}
+  S.cand=Object.assign({},SES.cand);S.mode=SES.mode;S.timed=SES.timed!==false;S.sesion=SES.id;S.phase="welcome";save();
+})();
+if(AL_MENU) location.replace("../");
 
 /* ====== Utilidades ====== */
 const $ = s => document.querySelector(s);
@@ -326,7 +342,7 @@ function timeout(){
 }
 function done(){
   return '<div class="sheet">'+brand()+'<h1>Terminaste la prueba</h1><p>Gracias'+(S.cand.nombre?", "+esc(S.cand.nombre.split(/\s+/)[0]):"")+', por tu tiempo y tu esfuerzo. Entrega el dispositivo a la persona que aplica la prueba.</p>'+
-  '<div style="margin-top:40px"><p class="small muted">Solo para quien aplica la prueba</p><button class="hold" id="hold" data-hold="results"><i></i><span>Mantén presionado para ver resultados</span></button></div></div>';
+  '<div style="margin-top:40px"><p class="small muted">Solo para quien aplica la prueba</p>'+(S.sesion&&MENU?'<button class="hold" id="hold" data-hold="volver"><i></i><span>Mantén presionado para volver al menú de pruebas</span></button>':'<button class="hold" id="hold" data-hold="results"><i></i><span>Mantén presionado para ver resultados</span></button>')+'</div></div>';
 }
 
 /* ====== Calificación ====== */
@@ -428,7 +444,7 @@ function buildPrompt(sc){
   L.push("- Tipo de puesto: "+(MODES[S.mode]?MODES[S.mode].puesto:"(no registrado)")+"; modalidad de tiempo: "+(S.timed?((MODES[S.mode]||MODES.std).label.toLowerCase()+((S.mode==="ext")?" ("+MODES.ext.factor+" veces la estándar)":"")):"sin límite"));
   L.push("- Duración total: "+fmt(dur)+" (min:s)");
   L.push("- Estado de la aplicación: "+(S.status==="cancelada"?"cancelada por el aplicador durante la parte "+(S.si+1)+"; las series no presentadas cuentan como omitidas y deben reportarse como no evaluadas":"terminada"));
-  L.push("- Incidencias anotadas por el aplicador: "+((S.incid||"").trim()?"«"+S.incid.trim().replace(/\s+/g," ")+"»":"ninguna"),"");
+  L.push(lineaIncidencias(S.incid),"");
   L.push("## Descripción de la prueba",PROMPT.descripcion,"");
   L.push("| Serie | Nombre | Factor | Reactivos | Regla de puntaje | Máximo | Límite |","|---|---|---|---|---|---|---|");
   sc.forEach(x=>L.push("| "+x.m.id+" | "+x.m.name+" | "+x.m.factor+" | "+ITEMS[x.m.id].length+" | "+reglaTexto(x.m)+" | "+x.max+" | "+(S.timed?fmt(((S.times[x.m.id]&&S.times[x.m.id].limit)||timeFor(x.m))*1000):"sin límite")+" |"));
@@ -499,7 +515,7 @@ function nextSeries(){
   S.si++;S.ii=0;
   if(S.si>=META.length){S.si=META.length-1;S.phase="done";S.status="terminada";S.finishedAt=now();}
   else S.phase="intro";
-  save();if(S.phase==="done")archivePut(S);render();
+  save();if(S.phase==="done"){archivePut(S);registrarEnSesion();}render();
 }
 function goItem(i){S.ii=i;SLOT=0;S.phase="item";save();render();}
 function next(){const n=items().length;if(S.ii<n-1)goItem(S.ii+1);else{S.phase="review";save();render();}}
@@ -624,29 +640,31 @@ document.addEventListener("input",e=>{
 let holdT=null,holdStart=0,holdEl=null;
 function holdStep(){
   if(!holdEl||!document.body.contains(holdEl)){holdT=null;return;}
-  const kind=holdEl.dataset.hold, ms=kind==="results"?1500:3000, p=Math.min(1,(now()-holdStart)/ms);
+  const kind=holdEl.dataset.hold, ms=kind==="menu"?3000:1500, p=Math.min(1,(now()-holdStart)/ms);
   const bar=holdEl.querySelector("i");if(bar)bar.style.width=(p*100)+"%";
   if(p>=1){holdT=null;const el=holdEl;holdEl=null;if(bar)bar.style.width="0";
-    if(kind==="results"){S.phase="results";save();render();}else applicatorMenu();
+    if(kind==="results"){S.phase="results";save();render();}
+    else if(kind==="volver") volverAlMenu();
+    else applicatorMenu();
     return;}
   holdT=requestAnimationFrame(holdStep);
 }
 function holdCancel(){if(holdT){cancelAnimationFrame(holdT);holdT=null;}if(holdEl){const b=holdEl.querySelector("i");if(b)b.style.width="0";
   if(holdEl.classList.contains("salir"))toast("Solo quien aplica la prueba: mantén presionado 3 segundos");holdEl=null;}}
-document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hold]");if(!el)return;if(el.dataset.hold==="results"||el.classList.contains("salir"))e.preventDefault();holdEl=el;holdStart=now();holdT=requestAnimationFrame(holdStep);});
+document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hold]");if(!el)return;if(el.classList.contains("hold")||el.classList.contains("salir"))e.preventDefault();holdEl=el;holdStart=now();holdT=requestAnimationFrame(holdStep);});
 ["pointerup","pointercancel"].forEach(ev=>document.addEventListener(ev,holdCancel,true));
 document.addEventListener("pointerleave",e=>{if(e.target===holdEl)holdCancel();},true);
 document.addEventListener("contextmenu",e=>{if(e.target.closest("[data-hold]"))e.preventDefault();});
 /* Cancela la aplicación en curso: cierra el reloj de la parte abierta, la archiva y limpia el estado. */
 function cancelar(){
   leaveView();const t=S.times[meta().id];if(t&&t.start&&!t.end)t.end=now();
-  S.status="cancelada";S.finishedAt=now();S.phase="done";save();archivePut(S);clearStore();S=blank();
+  S.status="cancelada";S.finishedAt=now();S.phase="done";save();archivePut(S);registrarEnSesion();clearStore();S=blank();
 }
 function applicatorMenu(){
   const btns=[{label:"Seguir con la prueba",cls:"ghost"}];
   if(MENU) btns.push({label:"Volver al menú de pruebas",cls:"ghost",fn:()=>modal("¿Cancelar y volver al menú?","El candidato ya no podrá continuar. Lo contestado queda en el historial de este dispositivo.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar y volver",fn:()=>{
     cancelar();location.href="../";}}])});
-  btns.push({label:"Cancelar aplicación",fn:()=>modal("¿Cancelar esta aplicación?","El candidato ya no podrá continuar.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar",fn:()=>{
+  if(!(MENU&&S.sesion)) btns.push({label:"Cancelar aplicación",fn:()=>modal("¿Cancelar esta aplicación?","El candidato ya no podrá continuar.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar",fn:()=>{
     cancelar();render();toast("Aplicación cancelada y guardada en el historial");}}])});
   modal("Menú del aplicador","Prueba de "+(S.cand.nombre||"sin nombre")+", parte "+(S.si+1)+" de "+META.length+". Si cancelas, lo contestado queda en el historial del dispositivo.",btns);
 }
@@ -693,4 +711,22 @@ document.addEventListener("fullscreenchange",fsSync);
 document.addEventListener("webkitfullscreenchange",fsSync);
 window.addEventListener("beforeunload",e=>{if(["intro","item","review","timeout"].includes(S.phase)){e.preventDefault();e.returnValue="";}});
 
-render();
+/* Registra en la sesión del menú el resultado de esta prueba, con su prompt.
+   Una cancelación antes de comenzar (prueba abierta por error) no se registra: queda pendiente. */
+function registrarEnSesion(){
+  if(!MENU||!S.sesion) return true;
+  if(S.status==="cancelada"&&!S.startedAt) return true;
+  const s=sesionLeer();if(!s||s.id!==S.sesion) return false;
+  const sc=scoreAll(), tot=sc.reduce((a,x)=>a+x.pts,0), max=sc.reduce((a,x)=>a+x.max,0), prev=s.pruebas[CARPETA]||{};
+  s.pruebas[CARPETA]={nombre:TEST_NAME,estado:S.status,app:S.id,fin:S.finishedAt||now(),tot,max,pct:Math.round(tot/max*100),
+    prompt:buildPrompt(sc),incid:prev.app===S.id?(prev.incid||""):""};
+  return sesionGuardar(s);
+}
+/* Pantalla final con sesión: el resultado ya está en el menú; se limpia la prueba y se vuelve a él.
+   Si la sesión no se pudo actualizar, los resultados se muestran aquí para no perderlos. */
+function volverAlMenu(){
+  if(!registrarEnSesion()){toast("No se pudo pasar el resultado al menú; se muestra aquí");S.phase="results";save();render();return;}
+  clearStore();S=blank();location.href="../";
+}
+if(RESUMED&&S.phase==="done") registrarEnSesion();
+if(!AL_MENU) render();

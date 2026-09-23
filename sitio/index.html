@@ -17,12 +17,13 @@
   --ink:#1C2633; --ink2:#4E596A; --line:#C9D3E1;
   --blue:#2447B8; --blue-d:#1B3690; --blue-soft:#EAF0FC;
   --pencil:#F2C230; --pencil-soft:#FFF4CC; --pencil-d:#C99A00;
-  --bad:#B42318; --bad-soft:#FDECEA; --warn:#A45A00;
+  --bad:#B42318; --bad-soft:#FDECEA; --warn:#A45A00; --ok:#17784A; --ok-soft:#E3F3EA;
   --fs:18px;
   color-scheme:light only;
 }
 @media (min-width:700px){:root{--fs:20px}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 body{margin:0;min-height:100vh;font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:var(--fs);line-height:1.45;color:var(--ink);
   background-color:var(--paper);
@@ -72,45 +73,155 @@ p{margin:0 0 .8em}
 .modal li{margin-bottom:.4em}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:12px;font-weight:700;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+/* captura */
+label.f{display:block;margin:0 0 16px}
+label.f span{display:block;font-weight:700;margin-bottom:6px;font-size:.92em}
+label.f input,label.f select,label.f textarea{width:100%;min-height:54px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);font:inherit;color:inherit}
+label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--blue);outline:none}
+.fila{display:flex;gap:0 12px;flex-wrap:wrap}
+.fila>label.f{flex:1 1 200px}
+.etq{font-weight:700;margin-bottom:6px;font-size:.92em}
+.seg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:18px}
+@media (max-width:480px){.seg{grid-template-columns:minmax(0,1fr)}}
+.seg button{min-height:64px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);text-align:left;padding:8px 14px;line-height:1.25;font:inherit;color:inherit;cursor:pointer}
+.seg button b{display:block}
+.seg button small{color:var(--ink2);font-size:.8em}
+.seg button[aria-pressed="true"]{border-color:var(--blue);background:var(--blue-soft)}
+.btn.block{width:100%}
+.btn.quiet{background:transparent;border-color:transparent;color:var(--blue);padding:0 12px}
+h2{font-size:1.2em;margin:1.2em 0 .5em}
+.hist{display:grid;gap:8px}
+.hist button{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:56px;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);text-align:left;font:inherit;color:inherit;cursor:pointer}
+.hist button span{color:var(--ink2);font-size:.85em}
+/* banda del candidato: visible todo el tiempo en el menú */
+.candidato{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--pencil-soft);border-bottom:2px solid var(--pencil)}
+.candidato small{display:block;color:var(--warn);font-weight:700;font-size:.72em;letter-spacing:.04em;text-transform:uppercase}
+.candidato b{display:block;font-size:1.15em;line-height:1.2}
+.candidato .det{display:block;color:var(--ink2);font-size:.8em}
+.candidato .btn{min-height:48px}
+/* estado de cada prueba */
+.prueba .estado{display:none;margin-top:12px;padding:6px 12px;border-radius:10px;font-weight:700;font-size:.9em}
+.prueba.terminada .estado{display:block;background:var(--ok-soft);border:2px solid var(--ok);color:var(--ok)}
+.prueba.cancelada .estado{display:block;background:var(--pencil-soft);border:2px solid var(--pencil);color:var(--warn)}
+.prueba.terminada{border-color:var(--ok)}
+.prueba.terminada .abrir{background:var(--sheet);color:var(--ok);border:2px solid var(--ok)}
+/* resultados */
+.res{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.res b{display:block}
+.res p{margin:4px 0 12px}
+.res label.f{margin:0}
+pre.prompt{white-space:pre-wrap;word-break:break-word;background:#F3F6FB;border:1px solid var(--line);border-radius:12px;padding:14px;max-height:340px;overflow:auto;font-size:.72em;line-height:1.4;font-family:ui-monospace,Menlo,Consolas,monospace}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
 <div class="app">
+<div class="candidato" id="candidato" hidden></div>
 <div class="sheet">
 <div class="brand"><b>Amador Russell</b><span>Reclutamiento y selección</span></div>
+<div id="avisos"></div>
+
+<section id="v-captura" hidden>
+<p class="muted small">Pantalla para quien aplica la prueba</p>
+<h1>Datos del candidato</h1>
+<p class="muted">Llénalos una sola vez: sirven para todas las pruebas que le apliques.</p>
+<label class="f"><span>Nombre completo del candidato</span><input id="f-nombre" autocomplete="off"></label>
+<div class="fila"><label class="f"><span>Edad</span><input id="f-edad" inputmode="numeric" maxlength="2"></label>
+<label class="f"><span>Escolaridad terminada</span><select id="f-esc"></select></label></div>
+<div class="fila"><label class="f"><span>Años desde que dejó la escuela <small class="muted">(opcional)</small></span><input id="f-anos" inputmode="numeric" maxlength="2"></label>
+<label class="f"><span>Uso de teléfono o tablet <small class="muted">(opcional)</small></span><select id="f-disp"></select></label></div>
+<label class="f"><span>Puesto al que aspira</span><input id="f-puesto" autocomplete="off"></label>
+<p class="etq">Tipo de puesto</p>
+<div class="seg" id="f-mode"></div>
+<label class="f"><span>Rancho o área <small class="muted">(opcional)</small></span><input id="f-sede" autocomplete="off"></label>
+<label class="f"><span>Nombre de quien aplica</span><input id="f-aplic" autocomplete="off"></label>
+<p class="etq">Tiempo por parte</p>
+<div class="seg" id="f-timed"></div>
+<button class="btn block" data-act="continuar">Continuar a las pruebas</button>
+<div id="anteriores"></div>
+</section>
+
+<section id="v-pruebas" hidden>
 <p class="muted small">Pantalla para quien aplica la prueba</p>
 <h1>¿Qué prueba vas a aplicar?</h1>
-<div id="avisos"></div>
-<p class="muted">Tócala para abrirla. En la siguiente pantalla llenas los datos del candidato.</p>
+<p class="muted">Tócala para abrirla. Al terminar, vuelve aquí para elegir la siguiente.</p>
 
 <!-- Una tarjeta por prueba. data-claves: claves de localStorage del estado en curso (principal y respaldo).
-     data-historial: clave del historial de aplicaciones de esa prueba. -->
+     data-historial: clave del historial de aplicaciones de esa prueba. La carpeta del enlace identifica la prueba en la sesión. -->
 <nav class="pruebas" aria-label="Pruebas disponibles">
 <a class="prueba" href="razonamiento-forma-b/" data-claves="rgFormaB.v1 rgFormaB.v1.respaldo" data-historial="rgFormaB.v1.historial">
 <span class="nom"><b>Razonamiento general</b><span class="forma">Forma B</span></span>
 <span class="desc">Mide cómo razona el candidato con palabras y números. Para todo tipo de puesto.</span>
 <span class="datos"><span class="dato"><b>10</b> partes</span><span class="dato"><b>29</b> min estándar</span><span class="dato"><b>37</b> min extendida</span></span>
 <span class="encurso">Hay una aplicación en curso en este dispositivo</span>
-<span class="abrir">Abrir esta prueba</span>
+<span class="estado"></span>
+<span class="abrir">Aplicar esta prueba</span>
 </a>
 </nav>
 
 <p class="small muted">Usa siempre este mismo enlace en cada dispositivo: el avance y los resultados se guardan en el navegador.</p>
 <div class="aplicador">
-<p class="small muted">Antes de entregar el dispositivo a un candidato nuevo</p>
-<button class="hold" id="preparar" data-hold="preparar"><i></i><span>Mantén presionado para preparar un candidato nuevo</span></button>
+<p class="small muted">Solo para quien aplica la prueba</p>
+<button class="hold" id="ver-resultados" data-hold="resultados"><i></i><span>Mantén presionado para ver resultados y prompt</span></button>
+<button class="hold" id="terminar" data-hold="terminar" style="margin-top:12px"><i></i><span>Mantén presionado para terminar con este candidato</span></button>
 </div>
+</section>
+
+<section id="v-resultados" hidden></section>
 </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 "use strict";
+/* ==== Inicio de motor/sesion.js: lo inserta herramientas/construir.py; no lo edites aquí. ====
+/* ====== Sesión del candidato ======
+   La comparten el menú de pruebas (sitio/index.html) y cada prueba servida desde GitHub Pages:
+   datos del candidato capturados una vez en el menú y resultado de cada prueba aplicada, con su prompt.
+   Se guarda como el estado de las pruebas: al instante, verificado por relectura y con copia de respaldo.
+   herramientas/construir.py la copia en ambos lados; se edita solo aquí. */
+const SESION = "arSesion.v1", SESION_BAK = SESION+".respaldo", SESION_ARCH = SESION+".historial";
+function sesionValida(o){return !!o&&typeof o==="object"&&typeof o.id==="string"&&!!o.cand&&typeof o.cand==="object"&&typeof o.cand.nombre==="string"&&!!o.pruebas&&typeof o.pruebas==="object";}
+function sesionLeer(){
+  for(const k of [SESION,SESION_BAK]){try{const o=JSON.parse(localStorage.getItem(k));if(sesionValida(o))return o;}catch(e){}}
+  return null;
+}
+function sesionGuardar(s){
+  s.rev=(s.rev||0)+1;s.guardada=Date.now();
+  const t=JSON.stringify(s);
+  try{
+    localStorage.setItem(SESION,t);
+    if(localStorage.getItem(SESION)!==t) return false;
+    localStorage.setItem(SESION_BAK,t);
+    return true;
+  }catch(e){return false;}
+}
+function sesionBorrar(){try{localStorage.removeItem(SESION);localStorage.removeItem(SESION_BAK);}catch(e){}}
+function sesionHistorial(){try{const a=JSON.parse(localStorage.getItem(SESION_ARCH)||"[]");return Array.isArray(a)?a.filter(sesionValida):[];}catch(e){return [];}}
+/* Archiva la sesión (últimas 30) y confirma que quedó guardada. */
+function sesionArchivar(s){
+  const a=sesionHistorial(), i=a.findIndex(x=>x.id===s.id);
+  if(i>=0)a[i]=s;else a.unshift(s);
+  while(a.length>30)a.pop();
+  for(;;){try{localStorage.setItem(SESION_ARCH,JSON.stringify(a));break;}catch(e){if(a.length<=1)return false;a.pop();}}
+  return sesionHistorial().some(x=>x.id===s.id);
+}
+/* Línea de incidencias del prompt. La prueba la escribe al terminar y el menú la reemplaza con lo que anote el aplicador. */
+const INCID_PREFIJO = "- Incidencias anotadas por el aplicador: ";
+function lineaIncidencias(t){t=(t||"").trim();return INCID_PREFIJO+(t?"«"+t.replace(/\s+/g," ")+"»":"ninguna");}
+/* ==== Fin de motor/sesion.js ==== */
+
 const EN_CURSO = ["welcome","intro","item","review","timeout"];
+const PUESTOS = {std:{puesto:"Administrativo o técnico",nota:"Tiempo estándar"},ext:{puesto:"Operativo: campo, empaque, taller o logística",nota:"Tiempo extendido"}};
+const ESCOLARIDAD = ["","Sin estudios","Primaria","Secundaria","Preparatoria o bachillerato","Carrera técnica","Licenciatura","Posgrado"];
+const DISPOSITIVO = ["","A diario","De vez en cuando","Casi nunca"];
 const $ = s => document.querySelector(s);
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const tarjetas = () => [...document.querySelectorAll(".prueba")];
+const carpeta = a => a.getAttribute("href").replace(/\/$/,"");
 const nombrePrueba = a => a.querySelector(".nom b").textContent+", "+a.querySelector(".forma").textContent;
+const fecha = t => new Date(t||0).toLocaleDateString("es-MX",{day:"numeric",month:"short",year:"numeric"});
+const STORAGE_OK = (()=>{try{const k="arMenu.prueba";localStorage.setItem(k,"1");const ok=localStorage.getItem(k)==="1";localStorage.removeItem(k);return ok;}catch(e){return false;}})();
+let VISTA = "pruebas", VER = null, BORR = {mode:null,timed:true};
 
 /* Estado guardado de una prueba: la copia principal o, si está dañada, el respaldo, como hace la prueba. */
 function leer(a){
@@ -120,24 +231,116 @@ function leer(a){
   return null;
 }
 
-/* Si hay una prueba a medio aplicar en este dispositivo, la raíz la reabre sola:
-   el candidato nunca debe quedar frente al menú a mitad de una prueba, ni al tocar "atrás"
-   (por eso también se revisa en pageshow, cuando el navegador restaura la página de su caché).
-   Aquí solo se lee la fase del estado guardado. */
+/* Si hay una prueba a medio aplicar en este dispositivo, la raíz la reabre sola: el candidato nunca debe
+   quedar frente al menú a mitad de una prueba, ni al tocar "atrás" (por eso también en pageshow). */
 function revisar(){
   const activas=tarjetas().filter(a=>{const o=leer(a);return !!o&&EN_CURSO.includes(o.phase);});
-  if(activas.length===1){location.replace(activas[0].href);return;}
+  if(activas.length===1){location.replace(activas[0].href);return false;}
   tarjetas().forEach(a=>a.classList.toggle("activa",activas.includes(a)));
   const avisos=[];
   if(activas.length>1) avisos.push('<div class="notice"><p><b>Hay '+activas.length+' pruebas en curso en este dispositivo.</b> Abre la marcada que corresponda para continuarla.</p></div>');
   if(/; wv\)|Telegram|FBAN|FBAV|Instagram|WhatsApp|Line\//i.test(navigator.userAgent||"")) avisos.push('<div class="notice bad"><p><b>Estás dentro del navegador de otra aplicación.</b> Puede borrar el avance al cerrarse. Para aplicar la prueba ábrela en Chrome o Safari.</p></div>');
+  if(!STORAGE_OK) avisos.push('<div class="notice bad"><p><b>Este navegador no permite guardar.</b> Abre este enlace en Chrome o Safari, fuera de modo privado.</p></div>');
   $("#avisos").innerHTML=avisos.join("");
+  return true;
 }
 
-/* Preparar el dispositivo para un candidato nuevo (pulsación larga del aplicador).
-   Por prueba: una aplicación sin terminar se cancela y se archiva en su historial, como
-   "Cancelar aplicación" dentro de la prueba; una terminada ya estaba archivada y solo se confirma.
-   El estado se borra únicamente después de verificar que quedó en el historial. El historial no se toca. */
+/* ====== Pantallas ====== */
+function pintar(){
+  const s=sesionLeer();
+  if(!s&&!VER) VISTA="captura";
+  ["captura","pruebas","resultados"].forEach(v=>$("#v-"+v).hidden=v!==(VER?"resultados":VISTA));
+  banda(VER||(VISTA==="captura"?null:s));
+  if(VER) resultados(VER,false);
+  else if(VISTA==="captura") captura(s);
+  else if(VISTA==="resultados") resultados(s,true);
+  else pruebas(s);
+  window.scrollTo(0,0);
+}
+function banda(s){
+  const b=$("#candidato");
+  if(!s){b.hidden=true;b.innerHTML="";return;}
+  const editable=!VER&&!Object.keys(s.pruebas).length;
+  b.hidden=false;
+  b.innerHTML='<div><small>Candidato</small><b id="cand-nombre">'+esc(s.cand.nombre)+'</b><span class="det">'+esc([s.cand.puesto,(PUESTOS[s.mode]||{}).puesto,s.timed===false?"Sin límite (piloto)":"Con tiempo límite"].filter(Boolean).join(" · "))+'</span></div>'+
+    (editable?'<button class="btn quiet" data-act="editar">Editar datos</button>':'');
+}
+function captura(s){
+  const c=s?s.cand:{}, v=k=>c[k]||"";
+  if(s){BORR.mode=s.mode;BORR.timed=s.timed!==false;}
+  ["nombre","edad","anos","puesto","sede","aplic"].forEach(k=>$("#f-"+k).value=v(k));
+  $("#f-esc").innerHTML=ESCOLARIDAD.map(x=>'<option'+(x===v("esc")?" selected":"")+'>'+x+'</option>').join("");
+  $("#f-disp").innerHTML=DISPOSITIVO.map(x=>'<option'+(x===v("disp")?" selected":"")+'>'+x+'</option>').join("");
+  $("#f-mode").innerHTML=Object.keys(PUESTOS).map(k=>'<button data-act="mode" data-v="'+k+'" aria-pressed="'+(BORR.mode===k)+'"><b>'+PUESTOS[k].puesto+'</b><small>'+PUESTOS[k].nota+'</small></button>').join("");
+  $("#f-timed").innerHTML='<button data-act="timed" data-v="1" aria-pressed="'+BORR.timed+'"><b>Con tiempo límite</b><small>Según el tipo de puesto</small></button><button data-act="timed" data-v="0" aria-pressed="'+!BORR.timed+'"><b>Sin límite (piloto)</b><small>Solo se registra el tiempo</small></button>';
+  const h=sesionHistorial();
+  $("#anteriores").innerHTML=h.length?'<h2>Candidatos anteriores en este dispositivo</h2><div class="hist">'+h.map(x=>'<button data-act="ver" data-v="'+esc(x.id)+'"><b>'+esc(x.cand.nombre||"Sin nombre")+'</b><span>'+fecha(x.creada)+', '+Object.keys(x.pruebas).length+' prueba(s)</span></button>').join("")+'</div>':"";
+}
+function pruebas(s){
+  tarjetas().forEach(a=>{
+    const r=s.pruebas[carpeta(a)], e=r?r.estado:"";
+    a.classList.toggle("terminada",e==="terminada");a.classList.toggle("cancelada",e==="cancelada");
+    a.querySelector(".estado").textContent=e==="terminada"?"Terminada":e==="cancelada"?"Cancelada: puedes aplicarla de nuevo":"";
+    a.querySelector(".abrir").textContent=e==="terminada"?"Ya se aplicó":e==="cancelada"?"Aplicar de nuevo":"Aplicar esta prueba";
+  });
+}
+function conIncidencias(prompt,incid){return prompt.split("\n").map(l=>l.startsWith(INCID_PREFIJO)?lineaIncidencias(incid):l).join("\n");}
+/* Un solo prompt para todas las pruebas del candidato. Con una sola prueba es el de esa prueba. */
+function promptCombinado(s){
+  const ps=Object.values(s.pruebas).map(p=>conIncidencias(p.prompt,p.incid));
+  if(ps.length<2) return ps[0]||"";
+  return ["# Evaluación de "+s.cand.nombre+" (Amador Russell SPR de RL)","",
+    "Este mensaje reúne "+ps.length+" pruebas aplicadas al mismo candidato en la misma sesión. Califica cada una con sus propias instrucciones. Al final agrega la sección «Conclusión integrada»: combina los resultados de todas en una sola recomendación (Recomendable, Recomendable con reservas o No recomendable) y explica en qué se apoya. Si una prueba quedó cancelada, dilo y no la uses para concluir.",""]
+    .concat(...ps.map(p=>[p,""])).join("\n");
+}
+function resultados(s,editable){
+  const ps=Object.entries(s.pruebas), prompt=promptCombinado(s);
+  $("#v-resultados").innerHTML='<p class="muted small">Resultados para quien aplica la prueba</p><h1>'+esc(s.cand.nombre)+'</h1>'+
+    (ps.length?ps.map(([k,p])=>'<div class="res"><b>'+esc(p.nombre)+'</b><p>'+(p.estado==="cancelada"?"Cancelada. ":"Terminada. ")+'Puntaje preliminar: <b style="display:inline">'+p.tot+' de '+p.max+'</b> ('+p.pct+' %).</p>'+
+      (editable?'<label class="f"><span>Incidencias de esta prueba <small class="muted">(opcional)</small></span><textarea rows="3" maxlength="1000" data-incid="'+esc(k)+'" placeholder="Interrupciones, ruido, olvidó sus lentes, pidió ayuda, falla del dispositivo">'+esc(p.incid)+'</textarea></label>':'')+'</div>').join("")+
+      (editable?'<p class="small muted">Las incidencias se agregan al prompt. Anota hechos observados, no opiniones sobre el candidato.</p>':'')+
+      '<h2>Prompt para la IA</h2><p class="muted small">Cópialo y pégalo en Claude para obtener la calificación e interpretación completas. Contiene la clave de respuestas: no lo compartas con el candidato.</p>'+
+      '<div class="row" style="margin-bottom:12px"><button class="btn" data-act="copiar">Copiar prompt</button>'+(navigator.share?'<button class="btn ghost" data-act="compartir">Compartir</button>':'')+'<button class="btn ghost" data-act="descargar">Descargar .txt</button></div>'+
+      '<pre class="prompt" id="prompt">'+esc(prompt)+'</pre>'
+    :'<p>Todavía no hay pruebas terminadas para este candidato.</p>')+
+    '<button class="btn ghost block" style="margin-top:18px" data-act="volver">'+(VER?"Volver":"Volver a las pruebas")+'</button>';
+}
+
+/* ====== Acciones ====== */
+function leerCaptura(){
+  const v=k=>$("#f-"+k).value.trim();
+  return {nombre:v("nombre"),edad:v("edad"),esc:$("#f-esc").value,anos:v("anos"),disp:$("#f-disp").value,puesto:v("puesto"),sede:v("sede"),aplic:v("aplic")};
+}
+function continuar(){
+  const cand=leerCaptura();
+  if(!cand.nombre){toast("Escribe el nombre del candidato");$("#f-nombre").focus();return;}
+  if(!BORR.mode){toast("Elige el tipo de puesto");return;}
+  let s=sesionLeer();
+  if(s&&!Object.keys(s.pruebas).length){s.cand=cand;s.mode=BORR.mode;s.timed=BORR.timed;}
+  else{
+    const fallas=pendientes().filter(({a,o})=>!prepararPrueba(a,o));
+    if(fallas.length){modal("No se pudo preparar el dispositivo","No se pudo guardar en el historial: "+esc(fallas.map(({a})=>nombrePrueba(a)).join(", "))+". Ábrela y cancélala desde su botón Salir.",[{label:"Entendido"}]);return;}
+    s={id:"S"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),creada:Date.now(),cand,mode:BORR.mode,timed:BORR.timed,pruebas:{}};
+  }
+  if(!sesionGuardar(s)){modal("No se pudo guardar","Este navegador no permite guardar los datos del candidato. Abre este enlace en Chrome o Safari, fuera de modo privado.",[{label:"Entendido"}]);return;}
+  VISTA="pruebas";pintar();
+}
+function terminar(){
+  const s=sesionLeer();if(!s)return;
+  const ps=Object.values(s.pruebas);
+  modal("¿Terminar con "+s.cand.nombre+"?",'<p>'+(ps.length?"Pruebas aplicadas: "+esc(ps.map(p=>p.nombre+" ("+p.estado+")").join(", "))+".":"No se le aplicó ninguna prueba.")+'</p><p>Sus resultados quedan en el historial de este dispositivo y el menú queda listo para el siguiente candidato.</p>',[
+    {label:"No",cls:"ghost"},
+    {label:"Sí, terminar",fn:()=>{
+      const fallas=pendientes().filter(({a,o})=>!prepararPrueba(a,o));
+      if(fallas.length||!sesionArchivar(s)){modal("No se pudo terminar","No se pudo guardar en el historial. Los datos siguen aquí; intenta de nuevo.",[{label:"Entendido"}]);return;}
+      sesionBorrar();BORR={mode:null,timed:true};VISTA="captura";pintar();toast("Listo para el siguiente candidato");
+    }}
+  ]);
+}
+
+/* Aplicaciones que quedaron en una prueba (en curso o terminadas sin limpiar). Se archivan en el historial
+   de esa prueba antes de limpiar su estado: una en curso, como cancelada y con el reloj de la parte abierta
+   cerrado en su hora límite si ya venció; una terminada ya estaba archivada y solo se confirma. */
 function pendientes(){return tarjetas().map(a=>({a,o:leer(a)})).filter(x=>x.o&&x.o.phase!=="setup");}
 function archivar(clave,c){
   let h=[];
@@ -162,22 +365,46 @@ function prepararPrueba(a,o){
   try{a.dataset.claves.split(" ").forEach(k=>localStorage.removeItem(k));}catch(e){return false;}
   return !leer(a);
 }
-function preparar(){
-  const lista=pendientes();
-  if(!lista.length){toast("No hay aplicaciones pendientes. Ya puedes elegir la prueba.");return;}
-  const li=lista.map(({a,o})=>'<li><b>'+esc(nombrePrueba(a))+'</b>: '+esc(o.cand&&o.cand.nombre||"sin nombre")+
-    (EN_CURSO.includes(o.phase)?'. Sin terminar: se cancela y se guarda en el historial.':'. Terminada: ya está en el historial.')+'</li>').join("");
-  modal("¿Preparar para un candidato nuevo?",'<ul>'+li+'</ul><p>Los resultados guardados en cada prueba se conservan.</p>',[
-    {label:"No",cls:"ghost"},
-    {label:"Sí, preparar",fn:()=>{
-      const fallas=lista.filter(({a,o})=>!prepararPrueba(a,o)).map(({a})=>nombrePrueba(a));
-      revisar();
-      if(fallas.length) modal("No se pudo preparar todo","No se pudo guardar en el historial: "+esc(fallas.join(", "))+". Esa prueba quedó como estaba; ábrela y cancélala desde su menú oculto.",[{label:"Entendido"}]);
-      else toast("Listo. Ya puedes elegir la prueba para el candidato nuevo.");
-    }}
-  ]);
-}
 
+document.addEventListener("click",e=>{
+  const card=e.target.closest(".prueba");
+  if(card){
+    const s=sesionLeer(), r=s&&s.pruebas[carpeta(card)];
+    if(!s){e.preventDefault();VISTA="captura";pintar();return;}
+    if(r&&r.estado==="terminada"){e.preventDefault();modal("Esta prueba ya se aplicó",'<p>'+esc(s.cand.nombre)+' ya contestó '+esc(nombrePrueba(card))+'. Sus resultados están en «Ver resultados y prompt».</p>',[{label:"Entendido"}]);return;}
+    if(r&&r.estado==="cancelada"){e.preventDefault();modal("¿Aplicarla de nuevo?",'<p>'+esc(nombrePrueba(card))+' se canceló para '+esc(s.cand.nombre)+'. Si la aplicas de nuevo empieza desde el principio y su resultado reemplaza al cancelado.</p>',[{label:"No",cls:"ghost"},{label:"Sí, aplicar de nuevo",fn:()=>{location.href=card.href;}}]);return;}
+    return;
+  }
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const act=b.dataset.act, v=b.dataset.v;
+  switch(act){
+    case "mode": BORR.mode=v;document.querySelectorAll('[data-act="mode"]').forEach(x=>x.setAttribute("aria-pressed",x===b));break;
+    case "timed": BORR.timed=v==="1";document.querySelectorAll('[data-act="timed"]').forEach(x=>x.setAttribute("aria-pressed",x===b));break;
+    case "continuar": continuar();break;
+    case "editar": VISTA="captura";pintar();break;
+    case "ver": VER=sesionHistorial().find(x=>x.id===v)||null;pintar();break;
+    case "volver": if(VER){VER=null;}else VISTA="pruebas";pintar();break;
+    case "copiar": copiar(promptCombinado(VER||sesionLeer()));break;
+    case "compartir": navigator.share({title:"Resultados "+(VER||sesionLeer()).cand.nombre,text:promptCombinado(VER||sesionLeer())}).catch(()=>{});break;
+    case "descargar": descargar(VER||sesionLeer());break;
+  }
+});
+document.addEventListener("input",e=>{
+  const k=e.target.dataset&&e.target.dataset.incid;if(!k)return;
+  const s=sesionLeer();if(!s||!s.pruebas[k])return;
+  s.pruebas[k].incid=e.target.value;
+  if(!sesionGuardar(s)){toast("No se pudieron guardar las incidencias");return;}
+  const pre=$("#prompt");if(pre)pre.textContent=promptCombinado(s);
+});
+
+function copiar(t){
+  const respaldo=()=>{const ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,t.length);let ok=false;try{ok=document.execCommand("copy");}catch(e){}ta.remove();toast(ok?"Prompt copiado":"No se pudo copiar; usa Descargar");};
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(t).then(()=>toast("Prompt copiado"),respaldo);else respaldo();
+}
+function descargar(s){
+  const nombre=("amador-russell-resultados-"+(s.cand.nombre||"candidato")).normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-zA-Z0-9]+/g,"-").toLowerCase()+".txt";
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([promptCombinado(s)],{type:"text/plain;charset=utf-8"}));a.download=nombre;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},500);
+}
 function modal(titulo,html,btns){
   const w=document.createElement("div");w.className="scrim";
   w.innerHTML='<div class="modal" role="dialog" aria-modal="true"><h2>'+esc(titulo)+'</h2>'+(html.charAt(0)==="<"?html:'<p>'+html+'</p>')+'<div class="row"></div></div>';
@@ -187,12 +414,13 @@ function modal(titulo,html,btns){
 }
 function toast(texto){const e=$("#toast");e.textContent=texto;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2600);}
 
-/* Pulsación larga de 3 s, como el menú oculto de la prueba. */
+/* Pulsaciones largas del aplicador: resultados (1.5 s) y terminar con el candidato (3 s). */
+const DURACION = {resultados:1500, terminar:3000};
 let holdEl=null,holdStart=0,holdT=null;
 function holdStep(){
-  const p=Math.min(1,(Date.now()-holdStart)/3000), bar=holdEl&&holdEl.querySelector("i");
+  const kind=holdEl.dataset.hold, p=Math.min(1,(Date.now()-holdStart)/DURACION[kind]), bar=holdEl.querySelector("i");
   if(bar)bar.style.width=(p*100)+"%";
-  if(p>=1){holdCancel();preparar();return;}
+  if(p>=1){holdCancel();if(kind==="resultados"){VISTA="resultados";pintar();}else terminar();return;}
   holdT=requestAnimationFrame(holdStep);
 }
 function holdCancel(){if(holdT)cancelAnimationFrame(holdT);holdT=null;if(holdEl){holdEl.querySelector("i").style.width="0";holdEl=null;}}
@@ -201,8 +429,8 @@ document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hol
 document.addEventListener("pointerleave",e=>{if(e.target===holdEl)holdCancel();},true);
 document.addEventListener("contextmenu",e=>{if(e.target.closest("[data-hold]"))e.preventDefault();});
 
-revisar();
-window.addEventListener("pageshow",e=>{if(e.persisted)revisar();});
+if(revisar()) pintar();
+window.addEventListener("pageshow",e=>{if(e.persisted&&revisar())pintar();});
 </script>
 </body>
 </html>
