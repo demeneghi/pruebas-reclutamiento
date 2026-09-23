@@ -30,7 +30,7 @@ body{margin:0;min-height:100%;font-family:"Atkinson",system-ui,-apple-system,"Se
   background-color:var(--paper);
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
   background-size:28px 28px;overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-adjust:100%}
-button,input,select{font:inherit;color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;touch-action:manipulation}
 :focus-visible{outline:3px solid var(--pencil);outline-offset:2px}
 .app{max-width:780px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
@@ -57,8 +57,8 @@ p{margin:0 0 .8em}
 /* forms */
 label.f{display:block;margin:0 0 16px}
 label.f span{display:block;font-weight:700;margin-bottom:6px;font-size:.92em}
-label.f input,label.f select{width:100%;min-height:54px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet)}
-label.f input:focus,label.f select:focus{border-color:var(--blue);outline:none}
+label.f input,label.f select,label.f textarea{width:100%;min-height:54px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet)}
+label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--blue);outline:none}
 .seg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
 .seg button{min-height:64px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);text-align:left;padding:8px 14px;line-height:1.25}
 .seg button b{display:block}
@@ -301,6 +301,7 @@ function load(){
 }
 function save(){
   if(!S||S._archived||BLOCKED||!STORAGE_OK||S.phase==="setup") return;
+  checkpoint();
   S.form=FORM_ID;S.tab=TAB;S.rev=(S.rev||0)+1;S.savedAt=Date.now();
   const data=cleanJSON(S);
   try{
@@ -335,6 +336,33 @@ function showBlocked(){
 let EX = null;          // estado del ejemplo (no se guarda)
 let SLOT = 0;           // casilla activa en teclado numérico
 let advanceTok = 0;
+
+/* Registro por reactivo para los indicadores de proceso del prompt.
+   S.log[serie][i] = {d, f, a, u, c}
+   d: ms acumulados con el reactivo en pantalla (no cuenta otras pantallas ni la pantalla apagada)
+   f: ms en pantalla hasta la primera respuesta; null si nunca respondió
+   a: primera respuesta; u: última respuesta registrada (JSON); c: veces que cambió la respuesta
+   La respuesta se registra al elegir, al completar las dos opciones (IV), con "Listo" (V y X)
+   o al salir del reactivo si quedó contestada. */
+let VIEW = null;
+function logRec(id,i){if(!S.log)S.log={};if(!S.log[id])S.log[id]=ITEMS[id].map(()=>null);return S.log[id][i]||(S.log[id][i]={d:0,f:null,a:null,u:null,c:0});}
+function checkpoint(){if(VIEW&&VIEW.t!=null){const n=Date.now();logRec(VIEW.id,VIEW.i).d+=n-VIEW.t;VIEW.t=n;}}
+function commitAns(id,i){
+  const m=META.find(x=>x.id===id), v=ansArr(id)[i];
+  if(!isAnswered(m,v)) return;
+  checkpoint();
+  const r=logRec(id,i), s=JSON.stringify(v);
+  if(r.f==null){r.f=r.d;r.a=JSON.parse(s);}
+  else if(s!==r.u) r.c++;
+  r.u=s;
+}
+function leaveView(){if(!VIEW)return;checkpoint();commitAns(VIEW.id,VIEW.i);VIEW=null;}
+function track(){
+  const k=S.phase==="item"&&!S._archived&&!BLOCKED?meta().id+":"+S.ii:null;
+  if(VIEW&&VIEW.k===k) return;
+  leaveView();
+  if(k){VIEW={k,id:meta().id,i:S.ii,t:document.visibilityState==="hidden"?null:Date.now()};logRec(VIEW.id,VIEW.i);}
+}
 function blank(){return {id:"A"+now36()+Math.random().toString(36).slice(2,6),status:"en curso",phase:"setup",cand:{},timed:true,mode:null,si:0,ii:0,ans:{},times:{},startedAt:null,finishedAt:null};}
 let S = blank();
 let RESUMED = false;
@@ -390,6 +418,7 @@ function modal(title,text,btns){
 function render(){
   const app=$("#app");
   const f={setup,welcome,intro,item,review,timeout,done,results}[S.phase];
+  track();
   app.innerHTML=f();
   window.scrollTo(0,0);
   tick();
@@ -410,6 +439,8 @@ function setup(){
   '<label class="f"><span>Nombre completo del candidato</span><input id="f-nombre" autocomplete="off" value="'+esc(c.nombre)+'"></label>'+
   '<div class="row"><label class="f" style="flex:1 1 120px"><span>Edad</span><input id="f-edad" inputmode="numeric" maxlength="2" value="'+esc(c.edad)+'"></label>'+
   '<label class="f" style="flex:3 1 220px"><span>Escolaridad terminada</span><select id="f-esc">'+["","Sin estudios","Primaria","Secundaria","Preparatoria o bachillerato","Carrera técnica","Licenciatura","Posgrado"].map(x=>'<option'+(x===c.esc?" selected":"")+'>'+x+'</option>').join("")+'</select></label></div>'+
+  '<div class="row"><label class="f" style="flex:1 1 120px"><span>Años desde que dejó la escuela <small class="muted">(opcional)</small></span><input id="f-anos" inputmode="numeric" maxlength="2" value="'+esc(c.anos)+'"></label>'+
+  '<label class="f" style="flex:3 1 220px"><span>Uso de teléfono o tablet <small class="muted">(opcional)</small></span><select id="f-disp">'+["","A diario","De vez en cuando","Casi nunca"].map(x=>'<option'+(x===c.disp?" selected":"")+'>'+x+'</option>').join("")+'</select></label></div>'+
   '<label class="f"><span>Puesto al que aspira</span><input id="f-puesto" autocomplete="off" value="'+esc(c.puesto)+'"></label>'+
   '<p style="font-weight:700;margin-bottom:6px;font-size:.92em">Tipo de puesto</p>'+
   '<div class="seg">'+["std","ext"].map(k=>'<button data-act="mode" data-v="'+k+'" aria-pressed="'+(S.mode===k)+'"><b>'+MODES[k].puesto+'</b><small>'+(k==="ext"?"Tiempo extendido, 25 % más":"Tiempo estándar")+'</small></button>').join("")+'</div>'+
@@ -420,7 +451,7 @@ function setup(){
   '<button class="btn block" data-act="toWelcome">Entregar al candidato</button>'+histHTML+'</div>';
 }
 function readSetup(){
-  S.cand={nombre:$("#f-nombre").value.trim(),edad:$("#f-edad").value.trim(),esc:$("#f-esc").value,puesto:$("#f-puesto").value.trim(),sede:$("#f-sede").value.trim(),aplic:$("#f-aplic").value.trim()};
+  S.cand={nombre:$("#f-nombre").value.trim(),edad:$("#f-edad").value.trim(),esc:$("#f-esc").value,anos:$("#f-anos").value.trim(),disp:$("#f-disp").value,puesto:$("#f-puesto").value.trim(),sede:$("#f-sede").value.trim(),aplic:$("#f-aplic").value.trim()};
 }
 
 /* ---- Bienvenida candidato ---- */
@@ -567,6 +598,39 @@ function scoreAll(){
     return {m,arr,st,ok,err,om,pts,max,pct:Math.round(pts/max*100),used:t.start?(t.end||now())-t.start:0,timedOut:!!t.timedOut};
   });
 }
+/* Indicadores de proceso por serie, a partir de S.log. null si la serie no tiene registro.
+   Respuesta rápida: primera respuesta en menos de RAPIDA_MS con el reactivo en pantalla.
+   Umbral interno y provisional; se calibra con la aplicación piloto sin límite. */
+const RAPIDA_MS = 2000;
+/* Registro de una serie. Sin S.log la aplicación viene de una versión anterior; una serie no presentada queda vacía. */
+function logOf(id){return S.log?(S.log[id]||(S.times[id]?null:[])):null;}
+function proc(x){
+  const lg=logOf(x.m.id);
+  if(!lg) return null;
+  const k=KEY[x.m.id], fs=[], p={rap:0,rapErr:0,chOk:0,chErr:0,chOtro:0,omVista:0,omNoVista:0,incompleto:false};
+  x.st.forEach((st,i)=>{
+    const r=lg[i];
+    if(st==="omitida"){if(r&&r.d>0)p.omVista++;else p.omNoVista++;return;}
+    if(!r||r.f==null){p.incompleto=true;return;}
+    fs.push(r.f);
+    const primeraOk=correct(x.m,r.a,k[i]);
+    if(r.f<RAPIDA_MS){p.rap++;if(!primeraOk)p.rapErr++;}
+    if(r.c>0){if(!primeraOk&&st==="ok")p.chOk++;else if(primeraOk&&st==="error")p.chErr++;else p.chOtro++;}
+  });
+  fs.sort((a,b)=>a-b);
+  const n=fs.length;
+  p.med=n?(n%2?fs[n>>1]:(fs[n/2-1]+fs[n/2])/2):null;
+  return p;
+}
+const seg = ms => (ms/1000).toFixed(1)+" s";
+function fmtProc(x,i,it){
+  const lg=logOf(x.m.id);
+  if(!lg) return "sin registro | sin registro";
+  const r=lg[i];
+  if(x.st[i]==="omitida") return (r&&r.d>0?"vista, sin respuesta":"no vista")+" | 0";
+  if(!r||r.f==null) return "sin registro | sin registro";
+  return seg(r.f)+" | "+(r.c?r.c+" (primera: "+fmtAns(x.m,it,r.a)+")":"0");
+}
 function fmtAns(m,it,v){
   if(!isAnswered(m,v)) return "(sin respuesta)";
   switch(m.type){
@@ -611,8 +675,10 @@ function buildPrompt(sc){
   L.push("## Rol","Actúa como psicólogo(a) laboral especializado(a) en evaluación psicométrica que apoya el proceso de reclutamiento de "+COMPANY_LEGAL+", "+COMPANY_DESC+". La empresa contrata personal de campo, empaque, taller y mantenimiento, logística y administración. Califica e interpreta la prueba descrita abajo usando exclusivamente los datos de este mensaje.","");
   L.push("## Datos de la aplicación");
   L.push("- Candidato: "+(c.nombre||"(no registrado)"));
-  L.push("- Edad: "+(c.edad||"(no registrada)"));
+  L.push("- Edad: "+(c.edad||"(no registrada)")+" (solo para identificar al candidato; ver Restricciones)");
   L.push("- Escolaridad terminada: "+(c.esc||"(no registrada)"));
+  L.push("- Años desde que dejó la escuela: "+(c.anos||"(no registrado)"));
+  L.push("- Uso de teléfono o tablet, según el aplicador: "+(c.disp?c.disp.toLowerCase():"(no registrado)"));
   L.push("- Puesto al que aspira: "+(c.puesto||"(no registrado)"));
   L.push("- Rancho o área: "+(c.sede||"(no registrado)"));
   L.push("- Aplicador: "+(c.aplic||"(no registrado)"));
@@ -620,7 +686,8 @@ function buildPrompt(sc){
   L.push("- Modalidad: digital en tablet o teléfono, respuesta por toque; tiempo límite por serie: "+(S.timed?"sí":"no, aplicación piloto (solo se registró el tiempo)"));
   L.push("- Tipo de puesto: "+(MODES[S.mode]?MODES[S.mode].puesto:"(no registrado)")+"; modalidad de tiempo: "+(S.timed?((MODES[S.mode]||MODES.std).label.toLowerCase()+((S.mode==="ext")?" (1.25 veces la estándar)":"")):"sin límite"));
   L.push("- Duración total: "+fmt(dur)+" (min:s)");
-  L.push("- Estado de la aplicación: "+(S.status==="cancelada"?"cancelada por el aplicador durante la parte "+(S.si+1)+"; las series no presentadas cuentan como omitidas y deben reportarse como no evaluadas":"terminada"),"");
+  L.push("- Estado de la aplicación: "+(S.status==="cancelada"?"cancelada por el aplicador durante la parte "+(S.si+1)+"; las series no presentadas cuentan como omitidas y deben reportarse como no evaluadas":"terminada"));
+  L.push("- Incidencias anotadas por el aplicador: "+((S.incid||"").trim()?"«"+S.incid.trim().replace(/\s+/g," ")+"»":"ninguna"),"");
   L.push("## Descripción de la prueba","Prueba de razonamiento general de 10 series con la estructura del Terman-Merrill. La Forma B es una versión propia de la empresa y no tiene baremos normativos publicados. Tiene dos modalidades de tiempo fijas según el tipo de puesto: estándar (administrativo o técnico) y extendida, con 25 % más tiempo (operativo: campo, empaque, taller o logística). La columna Límite muestra el tiempo que realmente se aplicó a este candidato. Cada serie se asocia con un factor:","");
   L.push("| Serie | Nombre | Factor | Reactivos | Regla de puntaje | Máximo | Límite |","|---|---|---|---|---|---|---|");
   sc.forEach(x=>L.push("| "+x.m.id+" | "+x.m.name+" | "+x.m.factor+" | "+ITEMS[x.m.id].length+" | "+ruleTxt(x.m)+" | "+x.max+" | "+(S.timed?fmt(((S.times[x.m.id]&&S.times[x.m.id].limit)||timeFor(x.m))*1000):"sin límite")+" |"));
@@ -635,22 +702,36 @@ function buildPrompt(sc){
   L.push("| Serie | Factor | Aciertos | Errores | Omisiones | Puntaje | Máximo | % | Tiempo usado | Se agotó el tiempo |","|---|---|---|---|---|---|---|---|---|---|");
   sc.forEach(x=>L.push("| "+x.m.id+" | "+x.m.factor+" | "+x.ok+" | "+x.err+" | "+x.om+" | "+x.pts+" | "+x.max+" | "+x.pct+" | "+fmt(x.used)+" | "+(S.timed?(x.timedOut?"sí":"no"):"n/a")+" |"));
   L.push("| Total | | "+sc.reduce((a,x)=>a+x.ok,0)+" | "+sc.reduce((a,x)=>a+x.err,0)+" | "+sc.reduce((a,x)=>a+x.om,0)+" | "+tot+" | "+max+" | "+Math.round(tot/max*100)+" | "+fmt(sc.reduce((a,x)=>a+x.used,0))+" | |","");
-  L.push("## Respuestas reactivo por reactivo","Formato: reactivo | enunciado [opciones] | respuesta del candidato | clave | resultado. Las letras corresponden al orden en que se mostraron las opciones.","");
+  const pr=sc.map(proc);
+  L.push("## Indicadores de proceso");
+  if(pr.every(p=>!p)) L.push("Esta aplicación no registró tiempos por reactivo porque se inició con una versión anterior de la prueba. Omite el análisis de tiempos por reactivo y de cambios de respuesta.","");
+  else{
+    L.push("Registrados por la aplicación durante la prueba.","- Primera respuesta: tiempo acumulado con el reactivo en pantalla hasta la primera respuesta del candidato. No cuenta el tiempo en otras pantallas ni con la pantalla apagada.","- Respuesta rápida: primera respuesta en menos de "+(RAPIDA_MS/1000)+" s. Umbral interno y provisional, sin calibrar con población propia.","- Cambios: se comparan la primera respuesta y la final. Otros cambios son los que no alteraron el resultado.","- Omisiones vistas: el reactivo apareció en pantalla y quedó sin respuesta. No vistas: el candidato nunca llegó a él.","- Precisión: aciertos entre reactivos contestados.","");
+    L.push("| Serie | Factor | Mediana de primera respuesta | Rápidas | Rápidas con primera respuesta errónea | Cambios de error a acierto | Cambios de acierto a error | Otros cambios | Omisiones vistas | Omisiones no vistas | Precisión % | % del límite usado |","|---|---|---|---|---|---|---|---|---|---|---|---|");
+    sc.forEach((x,j)=>{
+      const p=pr[j], lim=S.timed&&S.times[x.m.id]&&S.times[x.m.id].limit, prec=x.ok+x.err?Math.round(x.ok/(x.ok+x.err)*100):"n/a", usoLim=lim?Math.round(x.used/(lim*1000)*100):"n/a";
+      if(!p){L.push("| "+x.m.id+" | "+x.m.factor+" | sin registro | | | | | | | | "+prec+" | "+usoLim+" |");return;}
+      L.push("| "+x.m.id+(p.incompleto?" (registro incompleto)":"")+" | "+x.m.factor+" | "+(p.med==null?"n/a":seg(p.med))+" | "+p.rap+" | "+p.rapErr+" | "+p.chOk+" | "+p.chErr+" | "+p.chOtro+" | "+p.omVista+" | "+p.omNoVista+" | "+prec+" | "+usoLim+" |");
+    });
+    L.push("");
+  }
+  L.push("## Respuestas reactivo por reactivo","Formato: reactivo | enunciado [opciones] | respuesta del candidato | clave | resultado | primera respuesta | cambios de respuesta. Las letras corresponden al orden en que se mostraron las opciones.","");
   sc.forEach(x=>{
     L.push("### Serie "+x.m.id+": "+x.m.name);
-    ITEMS[x.m.id].forEach((it,i)=>L.push(x.m.id+"-"+String(i+1).padStart(2,"0")+" | "+fmtStem(x.m,it)+" | "+fmtAns(x.m,it,x.arr[i])+" | "+fmtKey(x.m,it,KEY[x.m.id][i])+" | "+x.st[i]));
+    ITEMS[x.m.id].forEach((it,i)=>L.push(x.m.id+"-"+String(i+1).padStart(2,"0")+" | "+fmtStem(x.m,it)+" | "+fmtAns(x.m,it,x.arr[i])+" | "+fmtKey(x.m,it,KEY[x.m.id][i])+" | "+x.st[i]+" | "+fmtProc(x,i,it)));
     L.push("");
   });
   L.push("## Tareas");
   L.push("1. Recalcula el puntaje de cada serie con la clave y las reglas. Si tu cálculo difiere de la precalificación, usa el tuyo y señala la diferencia.");
   L.push("2. Calcula el puntaje total y el porcentaje global, y asigna el nivel con la escala provisional.");
   L.push("3. Asigna nivel a cada factor e identifica los factores más fuertes y los más débiles.");
-  L.push("4. Detecta patrones: omisiones concentradas al final de una serie (falta de tiempo), series con tiempo agotado, errores sistemáticos del mismo tipo y señales de respuesta al azar (misma letra repetida, tiempos muy cortos con muchos errores).");
-  L.push("5. Considera la escolaridad declarada al interpretar las series que dependen de conocimiento escolar (I, III, IV, VII y IX) y distingue falta de conocimiento de falta de razonamiento.");
-  L.push("6. Relaciona el perfil con las exigencias cognitivas probables del puesto al que aspira dentro de una operación agrícola (por ejemplo: seguir instrucciones y dosis, calcular cantidades, llevar registros, detectar anomalías en campo o equipo, coordinar cuadrillas). No supongas funciones que el nombre del puesto no indique; si el puesto no está registrado, omite este punto.");
-  L.push("7. Emite una conclusión: Recomendable, Recomendable con reservas o No recomendable, con su justificación.","");
-  L.push("## Formato de salida","Responde en español con estas secciones, en este orden:","1. Resumen: una línea con puntaje total, porcentaje, nivel y conclusión.","2. Tabla de calificación por serie: serie, factor, aciertos, errores, omisiones, puntaje, máximo, porcentaje y nivel.","3. Perfil de factores: fortalezas y áreas débiles, con evidencia (reactivos concretos).","4. Patrones de respuesta y uso del tiempo.","5. Ajuste al puesto.","6. Conclusión y recomendaciones para la entrevista (qué explorar o verificar).","7. Limitaciones de la interpretación.","");
-  L.push("## Restricciones","- No inventes datos que no estén en este mensaje.","- Distingue hechos (datos de la prueba) de inferencias.","- Indica en una línea que esta prueba no basta por sí sola para decidir una contratación.","- Usa lenguaje respetuoso y sin etiquetas diagnósticas.","- Compara este resultado solo con candidatos evaluados en la misma modalidad de tiempo. No ajustes ni corrijas el puntaje por la modalidad.");
+  L.push("4. Detecta patrones con la precalificación y los indicadores de proceso: omisiones no vistas al final de una serie (falta de tiempo) frente a omisiones vistas y dejadas en blanco; series con tiempo agotado; errores sistemáticos del mismo tipo; señales de respuesta al azar o de poco esfuerzo (respuestas rápidas concentradas con errores, misma letra repetida); y si los cambios de respuesta mejoraron o empeoraron el resultado. Compara los tiempos solo entre reactivos de la misma serie de este candidato: no hay tiempos de referencia, y tardar más en reactivos más difíciles es esperable.");
+  L.push("5. Considera la escolaridad declarada y los años desde que dejó la escuela al interpretar las series que dependen de conocimiento escolar (I, III, IV, VII y IX) y distingue falta de conocimiento de falta de razonamiento.");
+  L.push("6. Considera las condiciones de la aplicación (uso de teléfono o tablet, incidencias anotadas) antes de atribuir a la capacidad del candidato un resultado bajo, lento o con muchas omisiones. Si una condición pudo afectar una serie, dilo y trata esa serie con cautela.");
+  L.push("7. Relaciona el perfil con las exigencias cognitivas probables del puesto al que aspira dentro de una operación agrícola (por ejemplo: seguir instrucciones y dosis, calcular cantidades, llevar registros, detectar anomalías en campo o equipo, coordinar cuadrillas). No supongas funciones que el nombre del puesto no indique; si el puesto no está registrado, omite este punto.");
+  L.push("8. Emite una conclusión: Recomendable, Recomendable con reservas o No recomendable, con su justificación.","");
+  L.push("## Formato de salida","Responde en español con estas secciones, en este orden:","1. Resumen: una línea con puntaje total, porcentaje, nivel y conclusión.","2. Tabla de calificación por serie: serie, factor, aciertos, errores, omisiones, puntaje, máximo, porcentaje y nivel.","3. Perfil de factores: fortalezas y áreas débiles, con evidencia (reactivos concretos).","4. Patrones de respuesta, uso del tiempo y condiciones de la aplicación.","5. Ajuste al puesto.","6. Conclusión y recomendaciones para la entrevista (qué explorar o verificar).","7. Limitaciones de la interpretación.","");
+  L.push("## Restricciones","- No inventes datos que no estén en este mensaje.","- Distingue hechos (datos de la prueba) de inferencias.","- Indica en una línea que esta prueba no basta por sí sola para decidir una contratación.","- Usa lenguaje respetuoso y sin etiquetas diagnósticas.","- No uses la edad para ajustar el puntaje, inferir capacidades ni fundamentar la conclusión: no hay baremo por edad y la ley prohíbe discriminar por edad al contratar. Si un resultado parece afectado por las condiciones de la aplicación, fundaméntalo en esas condiciones, no en la edad.","- Compara este resultado solo con candidatos evaluados en la misma modalidad de tiempo. No ajustes ni corrijas el puntaje por la modalidad.");
   return L.join("\n");
 }
 function results(){
@@ -662,6 +743,8 @@ function results(){
   sc.map(x=>'<tr><td><b>'+x.m.id+'</b><small>'+esc(x.m.factor)+'</small></td><td>'+x.ok+'</td><td>'+x.err+'</td><td>'+x.om+'</td><td>'+x.pts+'/'+x.max+'</td><td>'+fmt(x.used)+(x.timedOut?"*":"")+'</td></tr>').join("")+
   '</tbody><tfoot><tr><td>Total</td><td></td><td></td><td></td><td>'+tot+'/'+max+'</td><td></td></tr></tfoot></table></div>'+
   (sc.some(x=>x.timedOut)?'<p class="small muted">* Se agotó el tiempo en esa parte.</p>':'')+
+  '<label class="f" style="margin-top:18px"><span>Incidencias de la aplicación <small class="muted">(opcional)</small></span><textarea id="f-incid" rows="3" maxlength="1000" placeholder="Interrupciones, ruido, olvidó sus lentes, pidió ayuda, falla del dispositivo">'+esc(S.incid)+'</textarea></label>'+
+  '<p class="small muted">Se agregan al prompt. Anota hechos observados, no opiniones sobre el candidato.</p>'+
   '<h2>Prompt para la IA</h2><p class="muted small">Cópialo y pégalo en Claude para obtener la calificación e interpretación completas. Contiene la clave de respuestas: no lo compartas con el candidato.</p>'+
   '<div class="row" style="margin-bottom:12px"><button class="btn" data-act="copy">Copiar prompt</button>'+(navigator.share?'<button class="btn ghost" data-act="share">Compartir</button>':'')+'<button class="btn ghost" data-act="download">Descargar .txt</button></div>'+
   '<pre class="prompt" id="prompt">'+esc(S._prompt)+'</pre>'+
@@ -673,9 +756,11 @@ function startSeries(){
   const m=meta();ansArr(m.id);
   const lim=S.timed?timeFor(m):null;
   S.times[m.id]={start:now(),limit:lim,mode:S.mode||"std",deadline:lim?now()+lim*1000:null};
+  if(!S.log)S.log={};if(!S.log[m.id])S.log[m.id]=ITEMS[m.id].map(()=>null);
   S.ii=0;SLOT=0;S.phase="item";save();render();
 }
 function finishSeries(byTime){
+  leaveView();
   const m=meta();const t=S.times[m.id]||(S.times[m.id]={start:now()});
   if(!t.end){t.end=byTime&&t.deadline?t.deadline:now();t.timedOut=!!byTime;}
   S.phase=byTime?"timeout":"_";
@@ -731,7 +816,7 @@ document.addEventListener("click",e=>{
     case "pick":{
       const val=+v;
       if(ctx==="ex"){if(EX.checked&&m.type!=="multi2")EX.checked=false;EX.v=val;EX.checked=true;$("#exbox").innerHTML=exampleHTML();break;}
-      setVal(ctx,val);render();scheduleNext(320);
+      setVal(ctx,val);commitAns(m.id,S.ii);render();scheduleNext(320);
       break;}
     case "toggle":{
       advanceTok++;
@@ -740,7 +825,7 @@ document.addEventListener("click",e=>{
       else if(cur.length>=2){const c=document.getElementById("cnt-"+ctx);if(c){c.textContent="Ya elegiste 2. Toca una para quitarla.";c.classList.add("nudge");}return;}
       else cur.push(i);
       if(ctx==="ex"){EX.checked=cur.length===2;EX.v=cur;$("#exbox").innerHTML=exampleHTML();}
-      else{setVal(ctx,cur);render();if(cur.length===2)scheduleNext(550);}
+      else{setVal(ctx,cur);if(cur.length===2)commitAns(m.id,S.ii);render();if(cur.length===2)scheduleNext(550);}
       break;}
     case "slot": SLOT=+v; if(ctx==="ex")$("#exbox").innerHTML=exampleHTML(); else render(); break;
     case "key": keyInput(ctx,v);break;
@@ -772,7 +857,7 @@ function keyInput(ctx,k){
     if(ctx==="ex"){const ready=m.type==="num"?(v||"")!=="":(v&&v[0]!==""&&v[1]!=="");if(ready){EX.checked=true;$("#exbox").innerHTML=exampleHTML();}else toast("Escribe tu respuesta");return;}
     if(m.type==="series"&&(!v||(v[0]||"")===""||(v[1]||"")==="")){const miss=!v||(v[0]||"")===""?0:1;SLOT=miss;const y=window.scrollY;render();window.scrollTo(0,y);toast("Falta escribir un número");return;}
     if(m.type==="num"&&!(v||"")){toast("Escribe tu respuesta");return;}
-    advanceTok++;next();return;
+    commitAns(m.id,S.ii);advanceTok++;next();return;
   }
   const edit=s=>{s=s||"";if(k==="del")return s.slice(0,-1);if(k==="."){if(s.includes("."))return s;return (s===""?"0":s)+".";}if(s.length>=9)return s;if(s==="0")return k;return s+k;};
   if(m.type==="num"){v=edit(v);}
@@ -782,7 +867,7 @@ function keyInput(ctx,k){
 }
 document.addEventListener("keydown",e=>{
   if(S.phase!=="item"&&S.phase!=="intro")return;
-  if(e.target.matches("input,select"))return;
+  if(e.target.matches("input,select,textarea"))return;
   const m=meta();
   if(m.type==="num"||m.type==="series"){
     let k=null;if(/^[0-9]$/.test(e.key))k=e.key;else if(e.key==="."||e.key===",")k=".";else if(e.key==="Backspace")k="del";else if(e.key==="Enter")k="ok";
@@ -793,6 +878,16 @@ document.addEventListener("keydown",e=>{
     if(e.key==="ArrowRight"||e.key==="Enter"){e.preventDefault();advanceTok++;next();}
     if(e.key==="ArrowLeft"&&S.ii>0){e.preventDefault();goItem(S.ii-1);}
   }
+});
+
+/* Incidencias del aplicador: actualizan el prompt y se guardan con la aplicación */
+let incidT=null;
+document.addEventListener("input",e=>{
+  if(e.target.id!=="f-incid"||S.phase!=="results")return;
+  S.incid=e.target.value;
+  S._prompt=buildPrompt(scoreAll());const pre=$("#prompt");if(pre)pre.textContent=S._prompt;
+  save();
+  clearTimeout(incidT);const st=S;incidT=setTimeout(()=>archivePut(st),400);
 });
 
 /* Pulsación larga: ver resultados (1.5 s) y menú oculto del aplicador (3 s) */
@@ -815,7 +910,7 @@ function applicatorMenu(){
   modal("Menú del aplicador","Prueba de "+(S.cand.nombre||"sin nombre")+", parte "+(S.si+1)+" de 10. Si cancelas, lo contestado queda en el historial del dispositivo.",[
     {label:"Seguir con la prueba",cls:"ghost"},
     {label:"Cancelar aplicación",fn:()=>modal("¿Cancelar esta aplicación?","El candidato ya no podrá continuar.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar",fn:()=>{
-      const t=S.times[meta().id];if(t&&t.start&&!t.end)t.end=now();
+      leaveView();const t=S.times[meta().id];if(t&&t.start&&!t.end)t.end=now();
       S.status="cancelada";S.finishedAt=now();S.phase="done";save();archivePut(S);clearStore();S=blank();render();toast("Aplicación cancelada y guardada en el historial");}}])}
   ]);
 }
@@ -848,7 +943,11 @@ async function download(){
 /* Pantalla encendida y pantalla completa */
 let wl=null;
 async function wake(){try{if("wakeLock" in navigator&&!wl){wl=await navigator.wakeLock.request("screen");wl.addEventListener("release",()=>{wl=null;});}}catch(e){}}
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&S.phase!=="setup")wake();tick();});
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState==="hidden"){if(VIEW){checkpoint();VIEW.t=null;}}
+  else{if(VIEW&&VIEW.t==null)VIEW.t=Date.now();if(S.phase!=="setup")wake();}
+  tick();
+});
 function fullscreen(){const d=document.documentElement;try{if(d.requestFullscreen&&!document.fullscreenElement)d.requestFullscreen().catch(()=>{});}catch(e){}}
 window.addEventListener("beforeunload",e=>{if(["intro","item","review","timeout"].includes(S.phase)){e.preventDefault();e.returnValue="";}});
 

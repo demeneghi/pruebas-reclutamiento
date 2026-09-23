@@ -34,5 +34,6 @@ Cada carpeta tiene su propio `CLAUDE.md` con el contexto específico.
 pip install playwright && python -m playwright install chromium
 python pruebas/razonamiento-forma-b/tests/test_flujo_completo.py
 python pruebas/razonamiento-forma-b/tests/test_persistencia.py
+python pruebas/razonamiento-forma-b/tests/test_indicadores.py
 python sitio/tests/test_selector.py
 ```

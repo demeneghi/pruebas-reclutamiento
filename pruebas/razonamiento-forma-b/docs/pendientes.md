@@ -24,6 +24,5 @@ Límites que esto no resuelve: capturas de pantalla y ayuda de terceros. Se reco
 ## Mejoras técnicas
 
 - Crear un build que genere `src/prueba.html` a partir de `datos/`, estilos y lógica separados, para dejar de editar el HTML a mano.
-- Calibrar tiempos con una aplicación piloto sin límite a 8 o 10 trabajadores actuales.
+- Calibrar tiempos límite y el umbral de respuesta rápida (`RAPIDA_MS`) con una aplicación piloto sin límite a 8 o 10 trabajadores actuales.
 - Diseñar una segunda forma equivalente para alternar.
-- Reportar en el prompt la precisión (aciertos entre contestadas) además del puntaje.

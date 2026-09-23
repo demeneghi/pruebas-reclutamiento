@@ -11,11 +11,11 @@
 
 ## Flujo
 
-1. Pantalla del aplicador: nombre, edad, escolaridad, puesto, tipo de puesto (obligatorio), rancho o área (opcional), aplicador, con o sin tiempo límite.
+1. Pantalla del aplicador: nombre, edad, escolaridad, años desde que dejó la escuela (opcional), uso de teléfono o tablet (opcional), puesto, tipo de puesto (obligatorio), rancho o área (opcional), aplicador, con o sin tiempo límite.
 2. Bienvenida del candidato: logotipo animado, saludo y cuatro reglas (partes, ejemplo, tiempo, no regresar).
 3. Por cada serie: introducción con ejemplo interactivo que no cuenta, preguntas, revisión con cuadrícula y cierre. Una serie cerrada no se puede reabrir.
 4. Pantalla final. Los resultados se abren manteniendo presionado un botón 1.5 s.
-5. Resultados: tabla resumen y prompt (copiar, compartir, descargar .txt).
+5. Resultados: tabla resumen, campo de incidencias del aplicador y prompt (copiar, compartir, descargar .txt). Las incidencias actualizan el prompt al escribirlas y se guardan con la aplicación, también al editarlas desde el historial.
 
 ## Respuesta y avance
 
@@ -50,6 +50,20 @@ La ponderación sigue la convención Terman-Merrill según se asumió; falta con
 - Modo "Sin límite (piloto)" para calibrar con personal actual.
 - El límite aplicado se guarda al iniciar cada serie; recargar no da tiempo extra.
 
+## Registro por reactivo
+
+- Por cada reactivo se guarda en `S.log`: tiempo acumulado en pantalla, tiempo en pantalla hasta la primera respuesta, primera respuesta, última respuesta registrada y número de cambios.
+- Solo cuenta el tiempo con el reactivo visible: no suman la revisión, otras pantallas ni la pantalla apagada. El tiempo acumulado se consolida en cada guardado, así que una recarga conserva lo transcurrido.
+- La respuesta se registra al elegir, al completar las dos opciones de la serie IV, con "Listo" en V y X, o al salir del reactivo si quedó contestada. Escribir cifras no cuenta como respuesta hasta ese momento.
+- Respuesta rápida: primera respuesta en menos de 2 s (`RAPIDA_MS`). Umbral interno y provisional, pendiente de calibrar con la aplicación piloto. No hay tiempos de referencia: el prompt pide comparar tiempos solo dentro de la misma serie del candidato.
+- Omisión vista: el reactivo apareció en pantalla y quedó en blanco. Omisión no vista: el candidato nunca llegó a él. Distingue falta de tiempo de reactivos saltados.
+- El registro no cambia reactivos ni límites, así que no cambia `FORM_ID`. Una aplicación iniciada antes del registro se reanuda sin él y el prompt advierte que no hay tiempos por reactivo.
+
+## Condiciones de la aplicación y edad
+
+- Los años desde que dejó la escuela y el uso de teléfono o tablet explican un resultado bajo o lento mejor que la edad, y se capturan en su lugar como contexto.
+- La edad aparece en el prompt solo para identificar al candidato. El prompt prohíbe usarla para ajustar el puntaje, inferir capacidades o fundamentar la conclusión: no hay baremo por edad y la Ley Federal del Trabajo (art. 133) y la Ley Federal para Prevenir y Eliminar la Discriminación prohíben negar empleo por edad.
+
 ## Persistencia
 
 - localStorage con clave `rgFormaB.v1`, copia idéntica en `rgFormaB.v1.respaldo` y verificación por relectura en cada guardado.
@@ -61,7 +75,7 @@ La ponderación sigue la convención Terman-Merrill según se asumió; falta con
 
 ## Prompt de calificación
 
-Incluye rol, contexto de la empresa, datos de la aplicación, modalidad y límite real por serie, reglas, escala provisional, precalificación automática, respuestas reactivo por reactivo con clave, tareas, formato de salida y restricciones. Prohíbe convertir a CI y comparar entre modalidades.
+Incluye rol, contexto de la empresa, datos y condiciones de la aplicación con las incidencias, modalidad y límite real por serie, reglas, escala provisional, precalificación automática, indicadores de proceso por serie, respuestas reactivo por reactivo con clave, tiempo de primera respuesta y cambios, tareas, formato de salida y restricciones. Prohíbe convertir a CI, comparar entre modalidades y usar la edad en la interpretación.
 
 ## Publicación
 
