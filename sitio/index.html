@@ -57,6 +57,22 @@ p{margin:0 0 .8em}
 .encurso{display:none;margin-top:12px;padding:6px 12px;border-radius:10px;background:var(--pencil-soft);border:2px solid var(--pencil);color:var(--warn);font-weight:700;font-size:.9em}
 .prueba.activa{border-color:var(--pencil-d)}
 .prueba.activa .encurso{display:block}
+.aplicador{margin-top:28px;padding-top:16px;border-top:1px dashed var(--line)}
+.hold{position:relative;overflow:hidden;width:100%;min-height:64px;border-radius:14px;border:2px solid var(--ink);background:var(--sheet);font:inherit;font-weight:700;color:var(--ink);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;cursor:pointer}
+.hold i{position:absolute;inset:0;width:0;background:var(--pencil-soft)}
+.hold span{position:relative}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 22px;border-radius:14px;border:2px solid var(--blue);background:var(--blue);color:#FFFFFF;font:inherit;font-weight:700;cursor:pointer}
+.btn.ghost{background:var(--sheet);color:var(--blue)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>.btn{flex:1 1 auto;white-space:nowrap}
+.scrim{position:fixed;inset:0;background:rgba(28,38,51,.45);display:grid;place-items:center;z-index:40;padding:20px}
+.modal{background:var(--sheet);border-radius:20px;max-width:460px;width:100%;padding:22px;max-height:90vh;overflow:auto}
+.modal h2{margin:0 0 .5em;font-size:1.2em}
+.modal ul{margin:0 0 .8em;padding-left:1.2em}
+.modal li{margin-bottom:.4em}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:12px;font-weight:700;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body>
@@ -68,9 +84,10 @@ p{margin:0 0 .8em}
 <div id="avisos"></div>
 <p class="muted">Tócala para abrirla. En la siguiente pantalla llenas los datos del candidato.</p>
 
-<!-- Una tarjeta por prueba. data-claves: claves de localStorage de la prueba en curso (principal y respaldo). -->
+<!-- Una tarjeta por prueba. data-claves: claves de localStorage del estado en curso (principal y respaldo).
+     data-historial: clave del historial de aplicaciones de esa prueba. -->
 <nav class="pruebas" aria-label="Pruebas disponibles">
-<a class="prueba" href="razonamiento-forma-b/" data-claves="rgFormaB.v1 rgFormaB.v1.respaldo">
+<a class="prueba" href="razonamiento-forma-b/" data-claves="rgFormaB.v1 rgFormaB.v1.respaldo" data-historial="rgFormaB.v1.historial">
 <span class="nom"><b>Razonamiento general</b><span class="forma">Forma B</span></span>
 <span class="desc">Mide cómo razona el candidato con palabras y números. Para todo tipo de puesto.</span>
 <span class="datos"><span class="dato"><b>10</b> partes</span><span class="dato"><b>29</b> min estándar</span><span class="dato"><b>37</b> min extendida</span></span>
@@ -80,30 +97,110 @@ p{margin:0 0 .8em}
 </nav>
 
 <p class="small muted">Usa siempre este mismo enlace en cada dispositivo: el avance y los resultados se guardan en el navegador.</p>
+<div class="aplicador">
+<p class="small muted">Antes de entregar el dispositivo a un candidato nuevo</p>
+<button class="hold" id="preparar" data-hold="preparar"><i></i><span>Mantén presionado para preparar un candidato nuevo</span></button>
 </div>
 </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>
 "use strict";
+const EN_CURSO = ["welcome","intro","item","review","timeout"];
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const tarjetas = () => [...document.querySelectorAll(".prueba")];
+const nombrePrueba = a => a.querySelector(".nom b").textContent+", "+a.querySelector(".forma").textContent;
+
+/* Estado guardado de una prueba: la copia principal o, si está dañada, el respaldo, como hace la prueba. */
+function leer(a){
+  for(const k of a.dataset.claves.split(" ")){
+    try{const o=JSON.parse(localStorage.getItem(k));if(o&&typeof o==="object"&&typeof o.phase==="string")return o;}catch(e){}
+  }
+  return null;
+}
+
 /* Si hay una prueba a medio aplicar en este dispositivo, la raíz la reabre sola:
    el candidato nunca debe quedar frente al menú a mitad de una prueba, ni al tocar "atrás"
    (por eso también se revisa en pageshow, cuando el navegador restaura la página de su caché).
-   Solo se lee la fase del estado guardado; nunca se escribe ni se muestra nada del candidato. */
+   Aquí solo se lee la fase del estado guardado. */
 function revisar(){
-  const EN_CURSO = ["welcome","intro","item","review","timeout"];
-  function fase(claves){
-    for(const k of claves){
-      try{const o=JSON.parse(localStorage.getItem(k));if(o&&typeof o==="object"&&typeof o.phase==="string")return o.phase;}catch(e){}
-    }
-    return null;
-  }
-  const activas=[...document.querySelectorAll(".prueba")].filter(a=>EN_CURSO.includes(fase(a.dataset.claves.split(" "))));
+  const activas=tarjetas().filter(a=>{const o=leer(a);return !!o&&EN_CURSO.includes(o.phase);});
   if(activas.length===1){location.replace(activas[0].href);return;}
-  document.querySelectorAll(".prueba").forEach(a=>a.classList.toggle("activa",activas.includes(a)));
+  tarjetas().forEach(a=>a.classList.toggle("activa",activas.includes(a)));
   const avisos=[];
   if(activas.length>1) avisos.push('<div class="notice"><p><b>Hay '+activas.length+' pruebas en curso en este dispositivo.</b> Abre la marcada que corresponda para continuarla.</p></div>');
   if(/; wv\)|Telegram|FBAN|FBAV|Instagram|WhatsApp|Line\//i.test(navigator.userAgent||"")) avisos.push('<div class="notice bad"><p><b>Estás dentro del navegador de otra aplicación.</b> Puede borrar el avance al cerrarse. Para aplicar la prueba ábrela en Chrome o Safari.</p></div>');
-  document.getElementById("avisos").innerHTML=avisos.join("");
+  $("#avisos").innerHTML=avisos.join("");
 }
+
+/* Preparar el dispositivo para un candidato nuevo (pulsación larga del aplicador).
+   Por prueba: una aplicación sin terminar se cancela y se archiva en su historial, como
+   "Cancelar aplicación" dentro de la prueba; una terminada ya estaba archivada y solo se confirma.
+   El estado se borra únicamente después de verificar que quedó en el historial. El historial no se toca. */
+function pendientes(){return tarjetas().map(a=>({a,o:leer(a)})).filter(x=>x.o&&x.o.phase!=="setup");}
+function archivar(clave,c){
+  let h=[];
+  try{h=JSON.parse(localStorage.getItem(clave)||"[]");if(!Array.isArray(h))h=[];}catch(e){h=[];}
+  const i=h.findIndex(x=>x&&x.id===c.id);if(i>=0)h[i]=c;else h.unshift(c);
+  while(h.length>30)h.pop();
+  for(;;){try{localStorage.setItem(clave,JSON.stringify(h));break;}catch(e){if(h.length<=1)return false;h.pop();}}
+  try{const v=JSON.parse(localStorage.getItem(clave));return Array.isArray(v)&&v.some(x=>x&&x.id===c.id);}catch(e){return false;}
+}
+function prepararPrueba(a,o){
+  const c=JSON.parse(JSON.stringify(o)), ahora=Date.now();
+  if(!c.id) c.id="A"+ahora.toString(36);
+  if(EN_CURSO.includes(c.phase)){
+    for(const k in (c.times||{})){
+      const t=c.times[k];
+      if(t&&t.start&&!t.end){const vencio=t.deadline&&t.deadline<ahora;t.end=vencio?t.deadline:ahora;if(vencio)t.timedOut=true;}
+    }
+    c.status="cancelada";c.finishedAt=ahora;
+  }
+  c.phase="done";
+  if(!archivar(a.dataset.historial,c)) return false;
+  try{a.dataset.claves.split(" ").forEach(k=>localStorage.removeItem(k));}catch(e){return false;}
+  return !leer(a);
+}
+function preparar(){
+  const lista=pendientes();
+  if(!lista.length){toast("No hay aplicaciones pendientes. Ya puedes elegir la prueba.");return;}
+  const li=lista.map(({a,o})=>'<li><b>'+esc(nombrePrueba(a))+'</b>: '+esc(o.cand&&o.cand.nombre||"sin nombre")+
+    (EN_CURSO.includes(o.phase)?'. Sin terminar: se cancela y se guarda en el historial.':'. Terminada: ya está en el historial.')+'</li>').join("");
+  modal("¿Preparar para un candidato nuevo?",'<ul>'+li+'</ul><p>Los resultados guardados en cada prueba se conservan.</p>',[
+    {label:"No",cls:"ghost"},
+    {label:"Sí, preparar",fn:()=>{
+      const fallas=lista.filter(({a,o})=>!prepararPrueba(a,o)).map(({a})=>nombrePrueba(a));
+      revisar();
+      if(fallas.length) modal("No se pudo preparar todo","No se pudo guardar en el historial: "+esc(fallas.join(", "))+". Esa prueba quedó como estaba; ábrela y cancélala desde su menú oculto.",[{label:"Entendido"}]);
+      else toast("Listo. Ya puedes elegir la prueba para el candidato nuevo.");
+    }}
+  ]);
+}
+
+function modal(titulo,html,btns){
+  const w=document.createElement("div");w.className="scrim";
+  w.innerHTML='<div class="modal" role="dialog" aria-modal="true"><h2>'+esc(titulo)+'</h2>'+(html.charAt(0)==="<"?html:'<p>'+html+'</p>')+'<div class="row"></div></div>';
+  const row=w.querySelector(".row");
+  btns.forEach(b=>{const x=document.createElement("button");x.className="btn "+(b.cls||"");x.textContent=b.label;x.onclick=()=>{w.remove();b.fn&&b.fn();};row.appendChild(x);});
+  document.body.appendChild(w);row.lastChild.focus();
+}
+function toast(texto){const e=$("#toast");e.textContent=texto;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2600);}
+
+/* Pulsación larga de 3 s, como el menú oculto de la prueba. */
+let holdEl=null,holdStart=0,holdT=null;
+function holdStep(){
+  const p=Math.min(1,(Date.now()-holdStart)/3000), bar=holdEl&&holdEl.querySelector("i");
+  if(bar)bar.style.width=(p*100)+"%";
+  if(p>=1){holdCancel();preparar();return;}
+  holdT=requestAnimationFrame(holdStep);
+}
+function holdCancel(){if(holdT)cancelAnimationFrame(holdT);holdT=null;if(holdEl){holdEl.querySelector("i").style.width="0";holdEl=null;}}
+document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hold]");if(!el)return;e.preventDefault();holdEl=el;holdStart=Date.now();holdT=requestAnimationFrame(holdStep);});
+["pointerup","pointercancel"].forEach(ev=>document.addEventListener(ev,holdCancel,true));
+document.addEventListener("pointerleave",e=>{if(e.target===holdEl)holdCancel();},true);
+document.addEventListener("contextmenu",e=>{if(e.target.closest("[data-hold]"))e.preventDefault();});
+
 revisar();
 window.addEventListener("pageshow",e=>{if(e.persisted)revisar();});
 </script>

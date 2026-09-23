@@ -57,7 +57,7 @@ La ponderación sigue la convención Terman-Merrill según se asumió; falta con
 - Al recargar, la prueba en curso se reanuda sola en la misma pregunta. Si la versión de los reactivos cambió (`FORM_ID`), se archiva y el aplicador decide.
 - Si la prueba se abre en otra pestaña, la anterior se bloquea.
 - Historial de las últimas 30 aplicaciones en `rgFormaB.v1.historial`.
-- Menú oculto del aplicador: mantener presionado 3 s el título de la parte para cancelar una aplicación.
+- Menú oculto del aplicador: mantener presionado 3 s el título de la bienvenida, de la parte o de la pantalla de tiempo terminado. Ofrece cancelar la aplicación y, servida desde Pages, cancelar y volver al menú de pruebas. En ambos casos la aplicación se archiva como cancelada antes de limpiar el estado.
 - Banner rojo fijo si falla el guardado; aviso si el navegador no permite guardar o si es un navegador embebido de otra app.
 
 ## Prompt de calificación
@@ -68,7 +68,7 @@ Incluye rol, contexto de la empresa, datos de la aplicación, modalidad y límit
 
 - GitHub Pages: https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/. El workflow `.github/workflows/pages.yml` publica solo `src/prueba.html`; `datos/`, `fuentes/` y `docs/` no llegan al sitio. La página lleva `noindex` para que los buscadores no la listen.
 - El sitio de Pages es público aunque el repositorio sea privado. La clave viaja ofuscada en base64 dentro del HTML, aceptable solo para aplicación presencial con el dispositivo en manos del aplicador.
-- Todas las páginas de Pages de la cuenta comparten el origen `demeneghi.github.io` y, por tanto, el localStorage: no publicar en esa cuenta páginas de terceros ni código que lea el almacenamiento. Única excepción: el menú de la raíz (`sitio/index.html`) consulta la fase guardada en `rgFormaB.v1` y su respaldo para reabrir una aplicación en curso; no escribe ni muestra datos del candidato.
+- Todas las páginas de Pages de la cuenta comparten el origen `demeneghi.github.io` y, por tanto, el localStorage: no publicar en esa cuenta páginas de terceros ni código que lea el almacenamiento. Única excepción: el menú de la raíz (`sitio/index.html`) lee `rgFormaB.v1` y su respaldo para reabrir una aplicación en curso. Con "Preparar para un candidato nuevo" (pulsación larga de 3 s y confirmación) archiva en `rgFormaB.v1.historial` la aplicación pendiente, cancelada si no estaba terminada y con el reloj de la parte abierta cerrado en su hora límite si ya venció. Solo después de verificar el archivo borra el estado. El historial no se borra; la confirmación muestra el nombre del candidato.
 - La pantalla del aplicador ofrece "Cambiar de prueba" (enlace a `../`) solo cuando la ruta termina en `/razonamiento-forma-b/` (constante `CARPETA`); en el artefacto o como archivo local no aparece.
 - Artefacto privado de Claude. Las descargas usan la capacidad `claude.use("downloads")` y, fuera de Claude, un enlace de descarga normal.
 - El historial depende del dominio: un dispositivo que aplicó desde el artefacto no ve ese historial en Pages, y viceversa. Cada dispositivo usa un solo enlace.

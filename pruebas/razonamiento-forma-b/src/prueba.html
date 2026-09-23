@@ -550,7 +550,7 @@ function review(){
   '<nav class="foot rv"><button class="btn ghost" data-act="goto" data-v="'+(arr.length-1)+'">Volver</button><button class="btn" data-act="endSeries">Terminar parte '+(S.si+1)+'</button></nav>';
 }
 function timeout(){
-  return '<div class="sheet"><h1>Se terminó el tiempo de la parte '+(S.si+1)+'</h1><p>Tus respuestas quedaron guardadas. Sigue con la siguiente parte.</p><button class="btn block" data-act="nextSeries">Continuar</button></div>';
+  return '<div class="sheet"><h1 data-hold="menu">Se terminó el tiempo de la parte '+(S.si+1)+'</h1><p>Tus respuestas quedaron guardadas. Sigue con la siguiente parte.</p><button class="btn block" data-act="nextSeries">Continuar</button></div>';
 }
 function done(){
   return '<div class="sheet">'+brand()+'<h1>Terminaste la prueba</h1><p>Gracias'+(S.cand.nombre?", "+esc(S.cand.nombre.split(/\s+/)[0]):"")+', por tu tiempo y tu esfuerzo. Entrega el dispositivo a la persona que aplica la prueba.</p>'+
@@ -813,13 +813,18 @@ document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hol
 ["pointerup","pointercancel"].forEach(ev=>document.addEventListener(ev,holdCancel,true));
 document.addEventListener("pointerleave",e=>{if(e.target===holdEl)holdCancel();},true);
 document.addEventListener("contextmenu",e=>{if(e.target.closest("[data-hold]"))e.preventDefault();});
+/* Cancela la aplicación en curso: cierra el reloj de la parte abierta, la archiva y limpia el estado. */
+function cancelar(){
+  const t=S.times[meta().id];if(t&&t.start&&!t.end)t.end=now();
+  S.status="cancelada";S.finishedAt=now();S.phase="done";save();archivePut(S);clearStore();S=blank();
+}
 function applicatorMenu(){
-  modal("Menú del aplicador","Prueba de "+(S.cand.nombre||"sin nombre")+", parte "+(S.si+1)+" de 10. Si cancelas, lo contestado queda en el historial del dispositivo.",[
-    {label:"Seguir con la prueba",cls:"ghost"},
-    {label:"Cancelar aplicación",fn:()=>modal("¿Cancelar esta aplicación?","El candidato ya no podrá continuar.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar",fn:()=>{
-      const t=S.times[meta().id];if(t&&t.start&&!t.end)t.end=now();
-      S.status="cancelada";S.finishedAt=now();S.phase="done";save();archivePut(S);clearStore();S=blank();render();toast("Aplicación cancelada y guardada en el historial");}}])}
-  ]);
+  const btns=[{label:"Seguir con la prueba",cls:"ghost"}];
+  if(MENU) btns.push({label:"Volver al menú de pruebas",cls:"ghost",fn:()=>modal("¿Cancelar y volver al menú?","El candidato ya no podrá continuar. Lo contestado queda en el historial de este dispositivo.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar y volver",fn:()=>{
+    cancelar();location.href="../";}}])});
+  btns.push({label:"Cancelar aplicación",fn:()=>modal("¿Cancelar esta aplicación?","El candidato ya no podrá continuar.",[{label:"No",cls:"ghost"},{label:"Sí, cancelar",fn:()=>{
+    cancelar();render();toast("Aplicación cancelada y guardada en el historial");}}])});
+  modal("Menú del aplicador","Prueba de "+(S.cand.nombre||"sin nombre")+", parte "+(S.si+1)+" de 10. Si cancelas, lo contestado queda en el historial del dispositivo.",btns);
 }
 
 /* Otra pestaña con la misma prueba: bloquear esta */

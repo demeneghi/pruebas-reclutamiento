@@ -26,7 +26,7 @@ Cada carpeta tiene su propio `CLAUDE.md` con el contexto específico.
 
 `.github/workflows/pages.yml` publica en GitHub Pages cada `pruebas/<prueba>/src/prueba.html` como `<prueba>/index.html`, más `sitio/index.html` en la raíz. Nada más del repositorio llega al sitio.
 
-`sitio/index.html` es el menú de pruebas: una tarjeta por prueba, escrita a mano. Si el dispositivo tiene una aplicación en curso, la raíz la reabre sola. Cada prueba define `CARPETA` para ofrecer "Cambiar de prueba" en la pantalla del aplicador cuando se sirve desde Pages.
+`sitio/index.html` es el menú de pruebas: una tarjeta por prueba, escrita a mano. Si el dispositivo tiene una aplicación en curso, la raíz la reabre sola. "Preparar para un candidato nuevo" (pulsación larga) archiva lo pendiente en el historial de cada prueba y limpia su estado; nunca borra el historial. Cada prueba define `CARPETA` para ofrecer "Cambiar de prueba" en la pantalla del aplicador y "Volver al menú de pruebas" en su menú oculto cuando se sirve desde Pages.
 
 ## Comandos
 
