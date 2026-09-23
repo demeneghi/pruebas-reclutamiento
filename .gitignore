@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+tests/capturas/
+.DS_Store
+CLAUDE.local.md
+.claude/settings.local.json
+resultados/
