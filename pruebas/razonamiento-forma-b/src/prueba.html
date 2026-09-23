@@ -482,7 +482,8 @@ let advanceTok = 0;
    o al salir del reactivo si quedó contestada. */
 let VIEW = null;
 function logRec(id,i){if(!S.log)S.log={};if(!S.log[id])S.log[id]=ITEMS[id].map(()=>null);return S.log[id][i]||(S.log[id][i]={d:0,f:null,a:null,u:null,c:0});}
-function checkpoint(){if(VIEW&&VIEW.t!=null){const n=Date.now();logRec(VIEW.id,VIEW.i).d+=n-VIEW.t;VIEW.t=n;}}
+/* Si el reloj del dispositivo retrocede (ajuste de hora, o el reloj simulado de las pruebas), el tramo cuenta 0, nunca negativo. */
+function checkpoint(){if(VIEW&&VIEW.t!=null){const n=Date.now();logRec(VIEW.id,VIEW.i).d+=Math.max(0,n-VIEW.t);VIEW.t=n;}}
 function commitAns(id,i){
   const m=META.find(x=>x.id===id), v=ansArr(id)[i];
   if(!isAnswered(m,v)) return;
