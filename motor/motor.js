@@ -190,6 +190,11 @@ function readSetup(){
   S.cand={nombre:$("#f-nombre").value.trim(),edad:$("#f-edad").value.trim(),esc:$("#f-esc").value,anos:$("#f-anos").value.trim(),disp:$("#f-disp").value,puesto:$("#f-puesto").value.trim(),sede:$("#f-sede").value.trim(),aplic:$("#f-aplic").value.trim()};
 }
 
+/* ---- Botón visible para salir de la prueba ----
+   Un toque corto solo avisa; mantenerlo 3 s abre el menú del aplicador (como el título de la parte). */
+const salirBtn = () => '<button class="salir" data-hold="menu" aria-label="Salir de la prueba. Solo quien aplica: mantener presionado 3 segundos"><i></i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M9 16l-4-4 4-4"/><path d="M5 12h10"/></svg><span>Salir</span></button>';
+const salirFila = () => '<div class="salir-fila">'+salirBtn()+'</div>';
+
 /* ---- Bienvenida candidato ---- */
 const ICO={
   partes:'<circle cx="5" cy="6" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="5" cy="18" r="1.8"/><path d="M10 6h10M10 12h10M10 18h10"/>',
@@ -212,7 +217,7 @@ function welcome(){
   rule("cierre","Al terminar una parte, ya no puedes regresar","Mientras sigas en ella, puedes cambiar tus respuestas.")+
   '</ul>'+
   '<p class="ask">¿Tienes dudas? Pregunta ahora a quien aplica la prueba.</p>'+
-  '<button class="btn block" data-act="begin">Comenzar</button></div>';
+  '<button class="btn block" data-act="begin">Comenzar</button>'+salirFila()+'</div>';
 }
 
 /* ---- Intro de cada parte ---- */
@@ -223,7 +228,7 @@ function intro(){
   '<div class="facts"><div class="fact"><b>'+ITEMS[m.id].length+'</b> preguntas</div>'+(S.timed?'<div class="fact">Tiempo: <b>'+fmtT(timeFor(m))+'</b></div>':'')+'</div>'+
   '<div class="exbox" id="exbox">'+exampleHTML()+'</div>'+
   '<button class="btn block" data-act="startSeries">Empezar parte '+(S.si+1)+'</button>'+
-  (fsEnabled()?'<button class="btn quiet block" id="fsbtn" data-act="fullscreen" style="margin-top:8px'+(fsActive()?';display:none':'')+'">Pantalla completa</button>':'')+'</div>';
+  (fsEnabled()?'<button class="btn quiet block" id="fsbtn" data-act="fullscreen" style="margin-top:8px'+(fsActive()?';display:none':'')+'">Pantalla completa</button>':'')+salirFila()+'</div>';
 }
 function exampleHTML(){
   const m=meta(), e=m.example;
@@ -245,7 +250,7 @@ function header(){
   const m=meta(), arr=ansArr(m.id);
   const segs=arr.map((v,i)=>'<i class="'+(i===S.ii&&S.phase==="item"?"cur":isAnswered(m,v)?"done":"")+'"></i>').join("");
   return '<header class="bar"><div class="bar-top"><div class="part" data-hold="menu">Parte '+(S.si+1)+' de '+META.length+'<small>'+esc(m.title)+'</small></div>'+
-  (S.timed?'<div class="timer" id="timer" aria-label="Tiempo restante">--:--</div>':'')+'</div><div class="segs" aria-hidden="true">'+segs+'</div></header>';
+  '<div class="bar-der">'+salirBtn()+(S.timed?'<div class="timer" id="timer" aria-label="Tiempo restante">--:--</div>':'')+'</div></div><div class="segs" aria-hidden="true">'+segs+'</div></header>';
 }
 function item(){
   const m=meta(), it=items()[S.ii], v=ansArr(m.id)[S.ii], n=items().length, last=S.ii===n-1;
@@ -317,7 +322,7 @@ function review(){
   '<nav class="foot rv"><button class="btn ghost" data-act="goto" data-v="'+(arr.length-1)+'">Volver</button><button class="btn" data-act="endSeries">Terminar parte '+(S.si+1)+'</button></nav>';
 }
 function timeout(){
-  return '<div class="sheet"><h1 data-hold="menu">Se terminó el tiempo de la parte '+(S.si+1)+'</h1><p>Tus respuestas quedaron guardadas. Sigue con la siguiente parte.</p><button class="btn block" data-act="nextSeries">Continuar</button></div>';
+  return '<div class="sheet"><h1 data-hold="menu">Se terminó el tiempo de la parte '+(S.si+1)+'</h1><p>Tus respuestas quedaron guardadas. Sigue con la siguiente parte.</p><button class="btn block" data-act="nextSeries">Continuar</button>'+salirFila()+'</div>';
 }
 function done(){
   return '<div class="sheet">'+brand()+'<h1>Terminaste la prueba</h1><p>Gracias'+(S.cand.nombre?", "+esc(S.cand.nombre.split(/\s+/)[0]):"")+', por tu tiempo y tu esfuerzo. Entrega el dispositivo a la persona que aplica la prueba.</p>'+
@@ -615,19 +620,20 @@ document.addEventListener("input",e=>{
   clearTimeout(incidT);const st=S;incidT=setTimeout(()=>archivePut(st),400);
 });
 
-/* Pulsación larga: ver resultados (1.5 s) y menú oculto del aplicador (3 s) */
+/* Pulsación larga: ver resultados (1.5 s) y menú del aplicador (3 s, desde "Salir" o el título) */
 let holdT=null,holdStart=0,holdEl=null;
 function holdStep(){
   if(!holdEl||!document.body.contains(holdEl)){holdT=null;return;}
   const kind=holdEl.dataset.hold, ms=kind==="results"?1500:3000, p=Math.min(1,(now()-holdStart)/ms);
-  const bar=holdEl.querySelector("i");if(bar&&kind==="results")bar.style.width=(p*100)+"%";
+  const bar=holdEl.querySelector("i");if(bar)bar.style.width=(p*100)+"%";
   if(p>=1){holdT=null;const el=holdEl;holdEl=null;if(bar)bar.style.width="0";
     if(kind==="results"){S.phase="results";save();render();}else applicatorMenu();
     return;}
   holdT=requestAnimationFrame(holdStep);
 }
-function holdCancel(){if(holdT){cancelAnimationFrame(holdT);holdT=null;}if(holdEl){const b=holdEl.querySelector("i");if(b)b.style.width="0";holdEl=null;}}
-document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hold]");if(!el)return;if(el.dataset.hold==="results")e.preventDefault();holdEl=el;holdStart=now();holdT=requestAnimationFrame(holdStep);});
+function holdCancel(){if(holdT){cancelAnimationFrame(holdT);holdT=null;}if(holdEl){const b=holdEl.querySelector("i");if(b)b.style.width="0";
+  if(holdEl.classList.contains("salir"))toast("Solo quien aplica la prueba: mantén presionado 3 segundos");holdEl=null;}}
+document.addEventListener("pointerdown",e=>{const el=e.target.closest("[data-hold]");if(!el)return;if(el.dataset.hold==="results"||el.classList.contains("salir"))e.preventDefault();holdEl=el;holdStart=now();holdT=requestAnimationFrame(holdStep);});
 ["pointerup","pointercancel"].forEach(ev=>document.addEventListener(ev,holdCancel,true));
 document.addEventListener("pointerleave",e=>{if(e.target===holdEl)holdCancel();},true);
 document.addEventListener("contextmenu",e=>{if(e.target.closest("[data-hold]"))e.preventDefault();});
