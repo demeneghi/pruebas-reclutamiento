@@ -1,5 +1,6 @@
-"""Contesta las 165 preguntas correctamente. Exige que cada pregunta avance y un total de 199/199."""
+"""Contesta las 165 preguntas correctamente. Exige que cada pregunta avance, un total de 199/199 y tiempo de primera respuesta en cada reactivo."""
 import asyncio
+import re
 import sys
 from playwright.async_api import async_playwright
 from comun import CLAVE, SERIES, iniciar, terminar_parte, mantener
@@ -59,6 +60,12 @@ async def main():
     total = [l for l in prompt.split("\n") if l.startswith("| Total | | 1")]
     if not total or "| 199 | 199 | 100 |" not in total[0]:
         fallas.append(f"total inesperado: {total}")
+    lineas = [l for l in prompt.split("\n") if re.match(r"^[IVX]+-\d\d \| ", l)]
+    con_tiempo = [l for l in lineas if re.search(r"\| ok \| \d+\.\d s \| 0$", l)]
+    if len(lineas) != 165 or len(con_tiempo) != 165:
+        fallas.append(f"reactivos con primera respuesta registrada y sin cambios: {len(con_tiempo)} de {len(lineas)}")
+    if "## Indicadores de proceso" not in prompt:
+        fallas.append("falta la sección de indicadores de proceso")
     fallas += [f"error JS: {e}" for e in errores]
     print("\n".join(fallas) if fallas else "OK: 165 reactivos, 199/199, sin errores")
     sys.exit(1 if fallas else 0)
