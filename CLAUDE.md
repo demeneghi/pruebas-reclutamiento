@@ -18,6 +18,10 @@ Las reglas del repositorio están en `.claude/rules/` y aplican a todas las prue
 
 Cada carpeta tiene su propio `CLAUDE.md` con el contexto específico.
 
+## Marca
+
+`marca/` guarda el logotipo original (`logo-amador-russell.png`), el script que lo vectoriza en piezas animables (`vectorizar_logo.py`, requiere pillow, numpy, scipy y potrace) y el SVG resultante. Si cambia el logotipo, regenera el SVG y cópialo en la constante `LOGO` de cada `src/prueba.html`.
+
 ## Publicación
 
 `.github/workflows/pages.yml` publica en GitHub Pages cada `pruebas/<prueba>/src/prueba.html` como `<prueba>/index.html`, más `sitio/index.html` en la raíz. Nada más del repositorio llega al sitio.

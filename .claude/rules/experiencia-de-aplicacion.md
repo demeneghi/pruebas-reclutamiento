@@ -10,7 +10,8 @@ paths:
 - Cada prueba es un solo HTML autocontenido que funciona sin red: CSS, JS, fuentes (base64) y datos incrustados. Sin CDNs ni recursos remotos.
 - Diseñada primero para teléfono y tablet: una pregunta por pantalla, objetivos táctiles de al menos 56 px, texto base de 18 a 20 px.
 - Tipografía Atkinson Hyperlegible. Estética de hoja de respuestas: fondo de cuadrícula tenue, burbujas que se rellenan, acento amarillo lápiz. Solo modo claro (`color-scheme: light only`).
-- Encabezado de marca "Amador Russell, Reclutamiento y selección" en las pantallas del aplicador, bienvenida, final y resultados.
+- Encabezado de marca "Amador Russell, Reclutamiento y selección" en las pantallas del aplicador, bienvenida, final y resultados. En la bienvenida, el logotipo animado (`LOGO`, generado desde `marca/`) ocupa el lugar del nombre.
+- Animaciones solo decorativas y fuera de las partes con tiempo: breves (menos de 3 s), de una sola vez, sin bloquear botones y desactivadas con `prefers-reduced-motion`.
 - Lenguaje llano, en tuteo, pensado para candidatos con escolaridad básica. Nada de jerga en instrucciones ni opciones.
 
 ## Flujo obligatorio
