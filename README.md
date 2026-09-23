@@ -7,6 +7,7 @@ Pruebas psicométricas digitales para aplicar en tablet o teléfono. Cada prueba
 | Prueba | En línea | Archivo |
 |---|---|---|
 | Razonamiento General, Forma B | https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/ | `pruebas/razonamiento-forma-b/src/prueba.html` |
+| Razonamiento con Figuras, Forma A | https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-figuras/ | `pruebas/razonamiento-figuras/src/prueba.html` |
 
 La raíz https://demeneghi.github.io/pruebas-reclutamiento/ muestra el menú de pruebas. Si en ese dispositivo hay una aplicación a medias, la reabre sola.
 

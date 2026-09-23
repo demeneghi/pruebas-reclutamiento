@@ -1,0 +1,744 @@
+{
+ "A": [
+  {
+   "regla": "Líneas en zigzag horizontales y parejas.",
+   "opciones": [
+    "continúa el patrón sin cortes",
+    "ladrillos",
+    "zigzag en vertical",
+    "vacía",
+    "rayas diagonales",
+    "puntos"
+   ]
+  },
+  {
+   "regla": "Muro de ladrillos: cada hilera tiene las juntas a la mitad de los ladrillos de la hilera de arriba.",
+   "opciones": [
+    "vacía",
+    "puntos",
+    "ladrillos en vertical",
+    "ladrillos más chicos",
+    "continúa el patrón sin cortes",
+    "zigzag"
+   ]
+  },
+  {
+   "regla": "Puntos iguales en hileras alternadas: cada hilera está corrida medio espacio respecto a la de arriba.",
+   "opciones": [
+    "continúa el patrón sin cortes",
+    "puntos en cuadrícula (uno debajo de otro)",
+    "rayas horizontales",
+    "círculos huecos",
+    "cruces",
+    "puntos más grandes"
+   ]
+  },
+  {
+   "regla": "Líneas onduladas suaves, todas iguales y paralelas.",
+   "opciones": [
+    "vacía",
+    "continúa el patrón sin cortes",
+    "ondas el doble de cerradas",
+    "ondas en vertical",
+    "zigzag de picos",
+    "rayas rectas"
+   ]
+  },
+  {
+   "regla": "Hileras que alternan: una de círculos, una de cuadros; las figuras quedan una debajo de otra.",
+   "opciones": [
+    "hileras intercambiadas (cuadros donde van círculos)",
+    "columnas en lugar de hileras",
+    "solo cuadros",
+    "figuras corridas medio espacio",
+    "continúa el patrón sin cortes",
+    "solo círculos"
+   ]
+  },
+  {
+   "regla": "Red de líneas diagonales cruzadas que forman rombos.",
+   "opciones": [
+    "cuadrícula recta",
+    "vacía",
+    "rombos corridos medio rombo",
+    "rombos más chicos",
+    "puntos",
+    "continúa el patrón sin cortes"
+   ]
+  },
+  {
+   "regla": "Círculos uno dentro de otro con el mismo centro; el hueco cae sobre la parte derecha de los anillos.",
+   "opciones": [
+    "arcos de otra parte del dibujo",
+    "arcos curvados al revés",
+    "continúa el patrón sin cortes",
+    "arcos girados",
+    "rayas diagonales rectas",
+    "vacía"
+   ]
+  },
+  {
+   "regla": "Líneas horizontales que se separan cada vez más de arriba hacia abajo.",
+   "opciones": [
+    "ondas",
+    "líneas en vertical",
+    "líneas más juntas (de más arriba)",
+    "líneas más separadas (de más abajo)",
+    "vacía",
+    "continúa el patrón sin cortes"
+   ]
+  },
+  {
+   "regla": "Puntos en cuadrícula que crecen de izquierda a derecha.",
+   "opciones": [
+    "puntos más grandes (de más a la derecha)",
+    "cuadros que crecen",
+    "vacía",
+    "continúa el patrón sin cortes",
+    "cruces",
+    "puntos más chicos (de más a la izquierda)"
+   ]
+  },
+  {
+   "regla": "Rayos que salen de un punto de la esquina de abajo a la izquierda.",
+   "opciones": [
+    "rayos cerca del centro",
+    "continúa el patrón sin cortes",
+    "ondas",
+    "rayos inclinados al revés",
+    "vacía",
+    "rayos girados"
+   ]
+  },
+  {
+   "regla": "Rejilla: las líneas verticales se juntan hacia la derecha y las horizontales se juntan hacia abajo.",
+   "opciones": [
+    "solo líneas horizontales",
+    "solo líneas verticales",
+    "continúa el patrón sin cortes",
+    "líneas más juntas (de más abajo a la derecha)",
+    "líneas más separadas (de más arriba a la izquierda)",
+    "vacía"
+   ]
+  },
+  {
+   "regla": "Un círculo grande y una banda diagonal gruesa sobre un fondo de puntos; el hueco cae donde la banda cruza el borde del círculo.",
+   "opciones": [
+    "solo la banda, sin el borde del círculo",
+    "círculo y banda volteados",
+    "solo el borde del círculo, sin la banda",
+    "cruce de otra parte del dibujo",
+    "círculo y banda girados",
+    "continúa el patrón sin cortes"
+   ]
+  }
+ ],
+ "B": [
+  {
+   "regla": "En la fila la figura se rellena de negro; en la columna el círculo cambia a cuadrado.",
+   "opciones": [
+    "triángulo blanco mediano",
+    "triángulo negro mediano",
+    "cuadrado blanco mediano",
+    "círculo negro mediano",
+    "cuadrado negro mediano",
+    "círculo blanco mediano"
+   ]
+  },
+  {
+   "regla": "En la fila la figura crece de chica a grande; en la columna el triángulo cambia a hexágono.",
+   "opciones": [
+    "hexágono blanco chico",
+    "hexágono blanco grande",
+    "triángulo blanco grande",
+    "cuadrado blanco chico",
+    "cuadrado blanco grande",
+    "triángulo blanco chico"
+   ]
+  },
+  {
+   "regla": "En la fila la flecha gira un cuarto de vuelta a la derecha; en la columna se rellena de negro.",
+   "opciones": [
+    "flecha negro grande",
+    "flecha blanco grande, girada 270° a la derecha",
+    "flecha negro grande, girada 270° a la derecha",
+    "flecha negro grande, girada 90° a la derecha",
+    "flecha blanco grande",
+    "flecha blanco grande, girada 90° a la derecha"
+   ]
+  },
+  {
+   "regla": "En la fila una figura se vuelve tres; en la columna el círculo cambia a rombo.",
+   "opciones": [
+    "3 cuadrados negros grandes",
+    "3 rombos negros grandes",
+    "1 rombo negro grande",
+    "1 círculo negro grande",
+    "1 cuadrado negro grande",
+    "3 círculos negros grandes"
+   ]
+  },
+  {
+   "regla": "En la fila aparece un punto adentro; en la columna el cuadrado cambia a círculo.",
+   "opciones": [
+    "hexágono blanco grande, con punto adentro",
+    "hexágono blanco grande",
+    "cuadrado blanco grande",
+    "círculo blanco grande, con punto adentro",
+    "círculo blanco grande",
+    "cuadrado blanco grande, con punto adentro"
+   ]
+  },
+  {
+   "regla": "En la fila la figura pasa de la esquina izquierda a la derecha; en la columna el triángulo cambia a círculo.",
+   "opciones": [
+    "círculo negro arriba a la derecha del marco",
+    "triángulo negro arriba a la derecha del marco",
+    "círculo negro arriba a la izquierda del marco",
+    "triángulo negro abajo a la derecha del marco",
+    "triángulo negro arriba a la izquierda del marco",
+    "círculo negro abajo a la derecha del marco"
+   ]
+  },
+  {
+   "regla": "En la fila la figura de afuera y la de adentro cambian de lugar; en la columna el cuadrado cambia a triángulo y el círculo a rombo.",
+   "opciones": [
+    "triángulo blanco grande, con rombo adentro",
+    "rombo blanco grande, con círculo adentro",
+    "rombo blanco grande, con triángulo adentro",
+    "triángulo blanco grande, con triángulo adentro",
+    "triángulo blanco grande, con círculo adentro",
+    "rombo blanco grande, con rombo adentro"
+   ]
+  },
+  {
+   "regla": "En la fila la figura da media vuelta; en la columna una figura se vuelve dos.",
+   "opciones": [
+    "1 gancho blanco grande",
+    "2 ganchos blancos grandes, girada 90° a la derecha",
+    "1 gancho blanco grande, girada 180° a la derecha",
+    "1 gancho blanco grande, girada 90° a la derecha",
+    "2 ganchos blancos grandes",
+    "2 ganchos blancos grandes, girada 180° a la derecha"
+   ]
+  },
+  {
+   "regla": "En la fila la figura se voltea como en un espejo; en la columna se rellena con rayas.",
+   "opciones": [
+    "gancho con rayas diagonales grande, en espejo",
+    "gancho blanco grande, en espejo, girada 180° a la derecha",
+    "gancho con rayas diagonales grande",
+    "gancho blanco grande, en espejo",
+    "gancho con rayas diagonales grande, en espejo, girada 180° a la derecha",
+    "gancho blanco grande"
+   ]
+  },
+  {
+   "regla": "En la fila cuatro figuras se vuelven dos; en la columna se rellenan de negro.",
+   "opciones": [
+    "3 pentágonos negros medianos",
+    "4 pentágonos negros medianos",
+    "3 pentágonos blancos medianos",
+    "2 pentágonos negros medianos",
+    "4 pentágonos blancos medianos",
+    "2 pentágonos blancos medianos"
+   ]
+  },
+  {
+   "regla": "En la fila la mitad negra gira un cuarto de vuelta a la derecha (de la izquierda pasa arriba); en la columna el círculo cambia a cuadrado.",
+   "opciones": [
+    "cuadrado mitad izquierda negra grande",
+    "círculo mitad de abajo negra grande",
+    "cuadrado mitad de arriba negra grande",
+    "círculo mitad izquierda negra grande",
+    "círculo mitad de arriba negra grande",
+    "cuadrado mitad de abajo negra grande"
+   ]
+  },
+  {
+   "regla": "En la fila la flecha gira un cuarto de vuelta a la derecha y se rellena de negro; en la columna una flecha se vuelve dos.",
+   "opciones": [
+    "2 flechas blancos grandes",
+    "2 flechas negros grandes, girada 180° a la derecha",
+    "2 flechas blancos grandes, girada 180° a la derecha",
+    "2 flechas negros grandes",
+    "2 flechas negros grandes, girada 90° a la derecha",
+    "2 flechas blancos grandes, girada 90° a la derecha"
+   ]
+  }
+ ],
+ "C": [
+  {
+   "regla": "En cada fila la cantidad aumenta de uno en uno (1, 2, 3); cada fila tiene su propia figura.",
+   "opciones": [
+    "2 triángulos negros grandes",
+    "2 cuadrados blancos grandes",
+    "3 cuadrados blancos grandes",
+    "3 triángulos negros grandes",
+    "2 cuadrados negros grandes",
+    "3 cuadrados negros grandes",
+    "3 triángulos blancos grandes",
+    "2 triángulos blancos grandes"
+   ]
+  },
+  {
+   "regla": "En cada fila la figura crece (chica, mediana, grande); cada fila tiene su figura y su relleno.",
+   "opciones": [
+    "estrella con rayas diagonales grande",
+    "hexágono negro mediano",
+    "estrella negro mediano",
+    "hexágono con rayas diagonales grande",
+    "estrella negro grande",
+    "hexágono con rayas diagonales mediano",
+    "hexágono negro grande",
+    "estrella con rayas diagonales mediano"
+   ]
+  },
+  {
+   "regla": "La cantidad aumenta en uno hacia la derecha y en uno hacia abajo: la última casilla tiene 5.",
+   "opciones": [
+    "4 círculos negros medianos",
+    "5 cuadrados negros medianos",
+    "5 círculos negros medianos",
+    "5 círculos blancos medianos",
+    "5 cuadrados blancos medianos",
+    "4 cuadrados negros medianos",
+    "4 cuadrados blancos medianos",
+    "4 círculos blancos medianos"
+   ]
+  },
+  {
+   "regla": "La flecha gira un octavo de vuelta a la derecha en cada paso de la fila; cada fila empieza un cuarto de vuelta más girada.",
+   "opciones": [
+    "flecha blanco grande, girada 270° a la derecha",
+    "flecha negro mediano, girada 270° a la derecha",
+    "flecha negro grande, girada 90° a la derecha",
+    "flecha blanco mediano, girada 270° a la derecha",
+    "flecha negro grande, girada 270° a la derecha",
+    "flecha blanco grande, girada 90° a la derecha",
+    "flecha negro mediano, girada 90° a la derecha",
+    "flecha blanco mediano, girada 90° a la derecha"
+   ]
+  },
+  {
+   "regla": "En cada fila la figura gana un lado (3, 4, 5); cada fila tiene su relleno.",
+   "opciones": [
+    "cuadrado con rayas diagonales grande",
+    "cuadrado negro chico",
+    "pentágono negro grande",
+    "cuadrado negro grande",
+    "cuadrado con rayas diagonales chico",
+    "pentágono con rayas diagonales grande",
+    "pentágono con rayas diagonales chico",
+    "pentágono negro chico"
+   ]
+  },
+  {
+   "regla": "En cada fila aumenta el número de líneas (1, 2, 3); cada fila tiene su dirección: horizontales, verticales, diagonales.",
+   "opciones": [
+    "3 líneas verticales",
+    "3 líneas diagonales gruesas",
+    "2 líneas verticales gruesas",
+    "2 líneas diagonales gruesas",
+    "3 líneas verticales gruesas",
+    "3 líneas diagonales",
+    "2 líneas verticales",
+    "2 líneas diagonales"
+   ]
+  },
+  {
+   "regla": "En cada fila se agrega una figura dentro de la anterior (1, 2, 3); la del centro es negra; cada fila tiene su figura.",
+   "opciones": [
+    "3 hexágonos uno dentro de otro, el del centro blanco",
+    "3 cuadrados uno dentro de otro, el del centro blanco",
+    "2 cuadrados uno dentro de otro, el del centro blanco",
+    "2 cuadrados uno dentro de otro, el del centro negro",
+    "3 cuadrados uno dentro de otro, el del centro negro",
+    "2 hexágonos uno dentro de otro, el del centro blanco",
+    "3 hexágonos uno dentro de otro, el del centro negro",
+    "2 hexágonos uno dentro de otro, el del centro negro"
+   ]
+  },
+  {
+   "regla": "El círculo avanza una esquina en el sentido de las manecillas del reloj en cada paso a la derecha y en cada paso hacia abajo.",
+   "opciones": [
+    "cuadrado negro arriba a la izquierda del marco",
+    "círculo negro arriba a la izquierda del marco",
+    "cuadrado blanco abajo a la derecha del marco",
+    "círculo negro abajo a la derecha del marco",
+    "círculo blanco abajo a la derecha del marco",
+    "círculo blanco arriba a la izquierda del marco",
+    "cuadrado negro abajo a la derecha del marco",
+    "cuadrado blanco arriba a la izquierda del marco"
+   ]
+  },
+  {
+   "regla": "En cada fila el relleno pasa de blanco a rayas y a negro; cada fila tiene su figura.",
+   "opciones": [
+    "rombo negro mediano",
+    "círculo con rayas verticales grande",
+    "círculo negro mediano",
+    "rombo con rayas verticales grande",
+    "rombo negro grande",
+    "círculo con rayas verticales mediano",
+    "círculo negro grande",
+    "rombo con rayas verticales mediano"
+   ]
+  },
+  {
+   "regla": "En cada fila la cantidad aumenta (1, 2, 3); hacia abajo las figuras crecen (chicas, medianas, grandes).",
+   "opciones": [
+    "2 estrellas negros medianos",
+    "2 cruzs negros grandes",
+    "3 cruzs negros medianos",
+    "3 estrellas negros grandes",
+    "2 cruzs negros medianos",
+    "2 estrellas negros grandes",
+    "3 cruzs negros grandes",
+    "3 estrellas negros medianos"
+   ]
+  },
+  {
+   "regla": "En cada fila aumenta la cantidad de flechas (1, 2, 3); hacia abajo las flechas giran un cuarto de vuelta a la derecha en cada fila.",
+   "opciones": [
+    "2 flechas negros grandes, girada 180° a la derecha",
+    "2 flechas negros grandes, girada 90° a la derecha",
+    "2 flechas blancos grandes, girada 90° a la derecha",
+    "3 flechas negros grandes, girada 90° a la derecha",
+    "3 flechas blancos grandes, girada 90° a la derecha",
+    "2 flechas blancos grandes, girada 180° a la derecha",
+    "3 flechas negros grandes, girada 180° a la derecha",
+    "3 flechas blancos grandes, girada 180° a la derecha"
+   ]
+  },
+  {
+   "regla": "Hacia la derecha la figura gana un lado (3, 4, 5); hacia abajo aumenta la cantidad (2, 3, 4).",
+   "opciones": [
+    "4 cuadrados blancos medianos",
+    "3 pentágonos blancos medianos",
+    "4 pentágonos con rayas diagonales medianos",
+    "3 cuadrados con rayas diagonales medianos",
+    "3 pentágonos con rayas diagonales medianos",
+    "4 pentágonos blancos medianos",
+    "3 cuadrados blancos medianos",
+    "4 cuadrados con rayas diagonales medianos"
+   ]
+  }
+ ],
+ "D": [
+  {
+   "regla": "Cada fila y cada columna tienen un círculo, un cuadrado y un triángulo; cada fila tiene su relleno.",
+   "opciones": [
+    "cuadrado negro chico",
+    "triángulo con rayas diagonales grande",
+    "cuadrado con rayas diagonales grande",
+    "cuadrado con rayas diagonales chico",
+    "triángulo negro grande",
+    "triángulo negro chico",
+    "triángulo con rayas diagonales chico",
+    "cuadrado negro grande"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen un rombo, un hexágono y una cruz, y también un relleno blanco, uno negro y uno con rayas.",
+   "opciones": [
+    "cruz negro grande",
+    "hexágono blanco mediano",
+    "cruz negro mediano",
+    "hexágono negro mediano",
+    "cruz blanco grande",
+    "hexágono blanco grande",
+    "hexágono negro grande",
+    "cruz blanco mediano"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen una, dos y tres figuras; cada fila tiene su figura.",
+   "opciones": [
+    "2 triángulos negros grandes",
+    "2 círculos negros grandes",
+    "2 triángulos blancos grandes",
+    "2 círculos blancos grandes",
+    "3 círculos negros grandes",
+    "3 círculos blancos grandes",
+    "3 triángulos negros grandes",
+    "3 triángulos blancos grandes"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen un pentágono, un círculo y una estrella, y también una figura chica, una mediana y una grande.",
+   "opciones": [
+    "pentágono blanco chico",
+    "círculo blanco chico",
+    "círculo negro chico",
+    "pentágono negro mediano",
+    "círculo negro mediano",
+    "círculo blanco mediano",
+    "pentágono blanco mediano",
+    "pentágono negro chico"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen un círculo, un cuadrado y un rombo, y adentro un punto, una barra y una cruz pequeña.",
+   "opciones": [
+    "círculo blanco grande, con punto adentro",
+    "círculo blanco mediano, con barra adentro",
+    "círculo blanco grande, con barra adentro",
+    "cuadrado blanco grande, con punto adentro",
+    "círculo blanco mediano, con punto adentro",
+    "cuadrado blanco mediano, con punto adentro",
+    "cuadrado blanco mediano, con barra adentro",
+    "cuadrado blanco grande, con barra adentro"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen una flecha hacia arriba, una a la derecha y una hacia abajo, y también un relleno blanco, uno negro y uno con rayas.",
+   "opciones": [
+    "flecha negro mediano, girada 180° a la derecha",
+    "flecha negro mediano, girada 90° a la derecha",
+    "flecha blanco mediano, girada 90° a la derecha",
+    "flecha blanco grande, girada 180° a la derecha",
+    "flecha negro grande, girada 180° a la derecha",
+    "flecha blanco grande, girada 90° a la derecha",
+    "flecha negro grande, girada 90° a la derecha",
+    "flecha blanco mediano, girada 180° a la derecha"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen triángulos, cuadrados y hexágonos; rellenos negro, blanco y con rayas; y una, dos y tres figuras.",
+   "opciones": [
+    "3 triángulos negros grandes",
+    "3 cuadrados negros grandes",
+    "2 cuadrados negros grandes",
+    "3 cuadrados con rayas diagonales grandes",
+    "3 triángulos con rayas diagonales grandes",
+    "2 cuadrados con rayas diagonales grandes",
+    "2 triángulos negros grandes",
+    "2 triángulos con rayas diagonales grandes"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen la figura en tres esquinas distintas (arriba a la izquierda, arriba a la derecha, abajo a la derecha) y tres figuras distintas: círculo, estrella y cuadrado.",
+   "opciones": [
+    "círculo negro arriba a la derecha del marco",
+    "estrella negro arriba a la derecha del marco",
+    "estrella blanco arriba a la izquierda del marco",
+    "círculo blanco arriba a la izquierda del marco",
+    "estrella negro arriba a la izquierda del marco",
+    "círculo negro arriba a la izquierda del marco",
+    "círculo blanco arriba a la derecha del marco",
+    "estrella blanco arriba a la derecha del marco"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen líneas horizontales, verticales y diagonales, y también una, dos y tres líneas.",
+   "opciones": [
+    "1 línea vertical gruesa",
+    "2 líneas horizontales",
+    "1 línea vertical",
+    "2 líneas verticales",
+    "2 líneas verticales gruesas",
+    "1 línea horizontal gruesa",
+    "2 líneas horizontales gruesas",
+    "1 línea horizontal"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen hexágonos, círculos y triángulos, y el centro blanco, negro y con rayas.",
+   "opciones": [
+    "3 círculos uno dentro de otro, el del centro con rayas diagonales",
+    "2 hexágonos uno dentro de otro, el del centro negro",
+    "2 círculos uno dentro de otro, el del centro con rayas diagonales",
+    "3 hexágonos uno dentro de otro, el del centro con rayas diagonales",
+    "3 círculos uno dentro de otro, el del centro negro",
+    "2 hexágonos uno dentro de otro, el del centro con rayas diagonales",
+    "3 hexágonos uno dentro de otro, el del centro negro",
+    "2 círculos uno dentro de otro, el del centro negro"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen cuadrado, rombo y círculo; rellenos con rayas, blanco y negro; y tamaños chico, mediano y grande.",
+   "opciones": [
+    "rombo con rayas diagonales mediano",
+    "círculo con rayas diagonales grande",
+    "rombo negro mediano",
+    "rombo negro grande",
+    "círculo negro grande",
+    "círculo negro mediano",
+    "rombo con rayas diagonales grande",
+    "círculo con rayas diagonales mediano"
+   ]
+  },
+  {
+   "regla": "Cada fila y cada columna tienen arriba un círculo, un cuadrado y un triángulo; abajo un rombo, una estrella y una cruz; y la figura de arriba negra, con rayas y blanca.",
+   "opciones": [
+    "cuadrado blanco arriba y estrella abajo",
+    "círculo negro arriba y estrella abajo",
+    "cuadrado negro arriba y estrella abajo",
+    "cuadrado blanco arriba y rombo abajo",
+    "círculo blanco arriba y rombo abajo",
+    "cuadrado negro arriba y rombo abajo",
+    "círculo negro arriba y rombo abajo",
+    "círculo blanco arriba y estrella abajo"
+   ]
+  }
+ ],
+ "E": [
+  {
+   "regla": "La tercera casilla de cada fila junta los trazos de las dos primeras.",
+   "opciones": [
+    "diagonal /, línea horizontal al centro, círculo, punto",
+    "línea horizontal al centro, círculo, punto",
+    "diagonal /, línea horizontal al centro, punto",
+    "diagonal /, círculo, punto",
+    "círculo, punto",
+    "punto",
+    "línea horizontal al centro, punto",
+    "diagonal /, punto"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila junta los trazos de las dos primeras.",
+   "opciones": [
+    "línea arriba, línea abajo, línea izquierda, diagonal \\",
+    "línea arriba, línea izquierda, diagonal \\, diagonal /",
+    "línea arriba, línea abajo, línea izquierda, línea derecha, diagonal \\, diagonal /",
+    "línea arriba, línea abajo, línea izquierda, línea derecha, diagonal \\",
+    "línea arriba, línea izquierda, línea derecha, diagonal \\",
+    "línea arriba, línea izquierda, diagonal \\",
+    "línea arriba, línea izquierda, línea derecha, diagonal \\, diagonal /",
+    "línea arriba, línea abajo, línea izquierda, diagonal \\, diagonal /"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila es la primera sin los trazos de la segunda.",
+   "opciones": [
+    "línea abajo, círculo",
+    "línea abajo, línea horizontal al centro",
+    "línea abajo, diagonal \\, línea horizontal al centro, círculo",
+    "línea abajo, diagonal \\, línea horizontal al centro",
+    "línea abajo, línea horizontal al centro, círculo",
+    "línea abajo, diagonal \\",
+    "línea abajo, diagonal \\, círculo",
+    "línea abajo"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila junta los trazos de las dos primeras.",
+   "opciones": [
+    "línea arriba, línea derecha, diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "línea arriba, línea abajo, línea derecha, diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "línea arriba, diagonal \\, línea horizontal al centro, línea vertical al centro, círculo",
+    "línea arriba, línea abajo, línea derecha, diagonal \\, línea horizontal al centro, línea vertical al centro, círculo",
+    "línea arriba, línea abajo, diagonal \\, línea horizontal al centro, línea vertical al centro, círculo",
+    "línea arriba, línea derecha, diagonal \\, línea horizontal al centro, línea vertical al centro, círculo",
+    "línea arriba, diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "línea arriba, línea abajo, diagonal \\, línea horizontal al centro, línea vertical al centro"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila es la primera sin los trazos de la segunda.",
+   "opciones": [
+    "línea abajo, línea derecha, diagonal \\",
+    "línea abajo, línea derecha, diagonal \\, línea vertical al centro",
+    "línea derecha, diagonal \\",
+    "línea abajo, diagonal \\, línea vertical al centro",
+    "línea derecha, diagonal \\, línea vertical al centro",
+    "diagonal \\, línea vertical al centro",
+    "línea abajo, diagonal \\",
+    "diagonal \\"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila tiene los trazos que están en una sola de las dos primeras; los que se repiten desaparecen.",
+   "opciones": [
+    "línea izquierda, línea derecha, diagonal \\, línea horizontal al centro",
+    "diagonal \\, diagonal /, línea horizontal al centro",
+    "línea derecha, diagonal \\, línea horizontal al centro",
+    "línea izquierda, diagonal \\, línea horizontal al centro",
+    "diagonal \\, línea horizontal al centro",
+    "línea derecha, diagonal \\, diagonal /, línea horizontal al centro",
+    "línea izquierda, línea derecha, diagonal \\, diagonal /, línea horizontal al centro",
+    "línea izquierda, diagonal \\, diagonal /, línea horizontal al centro"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila es la primera sin los trazos de la segunda.",
+   "opciones": [
+    "línea abajo, diagonal /, línea vertical al centro, punto",
+    "línea abajo, diagonal /",
+    "línea abajo, diagonal /, línea vertical al centro",
+    "línea abajo, línea derecha, diagonal /, punto",
+    "línea abajo, línea derecha, diagonal /, línea vertical al centro, punto",
+    "línea abajo, diagonal /, punto",
+    "línea abajo, línea derecha, diagonal /, línea vertical al centro",
+    "línea abajo, línea derecha, diagonal /"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila tiene los trazos que están en una sola de las dos primeras; los que se repiten desaparecen.",
+   "opciones": [
+    "línea arriba, línea derecha",
+    "línea arriba, línea derecha, línea vertical al centro, círculo",
+    "línea arriba, línea vertical al centro",
+    "línea arriba, línea vertical al centro, círculo",
+    "línea arriba, línea derecha, línea vertical al centro",
+    "línea arriba, línea derecha, círculo",
+    "línea arriba, círculo",
+    "línea arriba"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila tiene solo los trazos que se repiten en las dos primeras.",
+   "opciones": [
+    "línea izquierda, línea derecha, línea horizontal al centro, línea vertical al centro",
+    "línea izquierda, línea derecha, diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "línea derecha, línea horizontal al centro, línea vertical al centro",
+    "línea derecha, diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "línea izquierda, línea horizontal al centro, línea vertical al centro",
+    "línea izquierda, diagonal \\, línea horizontal al centro, línea vertical al centro",
+    "línea horizontal al centro, línea vertical al centro"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila tiene los trazos que están en una sola de las dos primeras; los que se repiten desaparecen.",
+   "opciones": [
+    "línea arriba, línea abajo, línea izquierda",
+    "línea arriba, línea abajo, línea izquierda, línea horizontal al centro",
+    "línea izquierda, línea horizontal al centro",
+    "línea izquierda",
+    "línea arriba, línea izquierda",
+    "línea abajo, línea izquierda, línea horizontal al centro",
+    "línea arriba, línea izquierda, línea horizontal al centro",
+    "línea abajo, línea izquierda"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila tiene solo los trazos que se repiten en las dos primeras.",
+   "opciones": [
+    "línea abajo, línea izquierda, diagonal /, línea horizontal al centro, línea vertical al centro",
+    "línea izquierda, diagonal /, línea horizontal al centro",
+    "línea abajo, línea izquierda, diagonal /, línea horizontal al centro",
+    "línea izquierda, diagonal /, línea horizontal al centro, línea vertical al centro",
+    "línea izquierda, diagonal /, línea vertical al centro",
+    "línea izquierda, diagonal /",
+    "línea abajo, línea izquierda, diagonal /",
+    "línea abajo, línea izquierda, diagonal /, línea vertical al centro"
+   ]
+  },
+  {
+   "regla": "La tercera casilla de cada fila tiene los trazos que están en una sola de las dos primeras; los que se repiten desaparecen.",
+   "opciones": [
+    "línea derecha, línea vertical al centro",
+    "línea izquierda, línea derecha, línea vertical al centro, círculo",
+    "línea izquierda, línea vertical al centro, círculo",
+    "línea vertical al centro, círculo",
+    "línea vertical al centro",
+    "línea izquierda, línea derecha, línea vertical al centro",
+    "línea derecha, línea vertical al centro, círculo",
+    "línea izquierda, línea vertical al centro"
+   ]
+  }
+ ]
+}
