@@ -3,7 +3,7 @@ import asyncio
 import re
 import sys
 from playwright.async_api import async_playwright
-from comun import CLAVE, SERIES, iniciar, terminar_parte, mantener
+from comun import CLAVE, SERIES, iniciar, terminar_parte, mantener, reloj, esperar
 
 
 def cifra(x):
@@ -21,6 +21,7 @@ async def main():
         nav = await p.chromium.launch()
         pg = await nav.new_page(viewport={"width": 390, "height": 844}, has_touch=True)
         pg.on("pageerror", lambda e: errores.append(str(e)))
+        await reloj(pg)
         await iniciar(pg, "Flujo completo")
         await pg.evaluate("document.fullscreenElement && document.exitFullscreen()")
         await pg.wait_for_timeout(300)
@@ -38,7 +39,7 @@ async def main():
                 if sid == "IV":
                     for x in k:
                         await pg.click(f'[data-act=toggle][data-ctx=real][data-v="{x}"]')
-                    await pg.wait_for_timeout(650)
+                    await esperar(pg, 650)
                 elif sid == "V":
                     for c in cifra(k):
                         await pg.click(f'[data-act=key][data-ctx=real][data-v="{c}"]')
@@ -50,7 +51,7 @@ async def main():
                         await pg.click('[data-act=key][data-ctx=real][data-v="ok"]')
                 else:
                     await pg.click(f'[data-act=pick][data-ctx=real][data-v="{k}"]')
-                    await pg.wait_for_timeout(400)
+                    await esperar(pg, 400)
                 if antes == await etiqueta(pg):
                     fallas.append(f"{sid}-{i + 1} no avanzó")
             await terminar_parte(pg)

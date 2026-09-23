@@ -44,9 +44,7 @@ Después de cambiar cualquiera de esas fuentes, corre `python herramientas/const
 ```bash
 pip install playwright && python -m playwright install chromium
 python herramientas/construir.py
-python herramientas/construir.py --verificar
-python pruebas/razonamiento-forma-b/tests/test_flujo_completo.py
-python pruebas/razonamiento-forma-b/tests/test_persistencia.py
-python pruebas/razonamiento-forma-b/tests/test_indicadores.py
-python sitio/tests/test_selector.py
+python herramientas/probar.py
 ```
+
+`probar.py` verifica la construcción y corre en paralelo todas las pruebas de `pruebas/*/tests/` y `sitio/tests/`; cada archivo también se puede correr solo.

@@ -3,7 +3,7 @@ import asyncio
 import re
 import sys
 from playwright.async_api import async_playwright
-from comun import CLAVE, URL, terminar_parte, mantener
+from comun import CLAVE, URL, terminar_parte, mantener, reloj, esperar
 
 
 def linea(prompt, prefijo):
@@ -21,6 +21,7 @@ async def main():
         nav = await p.chromium.launch()
         pg = await nav.new_page(viewport={"width": 390, "height": 844}, has_touch=True)
         pg.on("pageerror", lambda e: errores.append(str(e)))
+        await reloj(pg)
         await pg.goto(URL)
         await pg.evaluate("localStorage.clear()")
         await pg.reload()
@@ -36,16 +37,16 @@ async def main():
         k = CLAVE["I"]
         # I-01: respuesta rápida errónea, luego corregida.
         await pg.click(f'[data-act=pick][data-ctx=real][data-v="{(k[0] + 1) % 4}"]')
-        await pg.wait_for_timeout(400)
+        await esperar(pg, 400)
         await pg.click("[data-act=prev]")
         await pg.click(f'[data-act=pick][data-ctx=real][data-v="{k[0]}"]')
-        await pg.wait_for_timeout(400)
+        await esperar(pg, 400)
         # I-02: unos 3 s en pantalla con una recarga en medio; el tiempo previo se conserva.
-        await pg.wait_for_timeout(1500)
+        await esperar(pg, 1500)
         await pg.reload()
-        await pg.wait_for_timeout(1500)
+        await esperar(pg, 1500)
         await pg.click(f'[data-act=pick][data-ctx=real][data-v="{k[1]}"]')
-        await pg.wait_for_timeout(400)
+        await esperar(pg, 400)
         # I-03: vista y dejada en blanco; I-04 en adelante, no vistas.
         await pg.click("[data-act=toReview]")
         await terminar_parte(pg)
@@ -74,7 +75,7 @@ async def main():
         comprobar(fila[3:11] == ["1", "1", "1", "0", "0", "1", "13", "100"], f"indicadores de la serie I inesperados: {fila}")
 
         # Las incidencias se guardan y sobreviven a la recarga.
-        await pg.wait_for_timeout(600)
+        await esperar(pg, 600)
         await pg.reload()
         await mantener(pg, "#hold", 1700)
         comprobar(await pg.input_value("#f-incid") == "Sonó su teléfono durante la parte 5.", "las incidencias no se guardaron")

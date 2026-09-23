@@ -9,6 +9,18 @@ CLAVE = json.loads((RAIZ / "datos" / "clave.json").read_text(encoding="utf-8"))
 SERIES = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
 
 
+async def reloj(pg):
+    """Reloj simulado para toda la página: las esperas de la aplicación (avance automático,
+    pulsaciones largas, tiempos por reactivo) se adelantan con esperar() en lugar de dormir.
+    Debe instalarse antes de la primera navegación."""
+    await pg.context.clock.install()
+
+
+async def esperar(pg, ms):
+    """Adelanta el reloj simulado ms milisegundos y dispara los temporizadores vencidos."""
+    await pg.clock.run_for(ms)
+
+
 async def iniciar(pg, nombre="Prueba", modo="ext"):
     await pg.goto(URL)
     await pg.evaluate("localStorage.clear()")
@@ -28,6 +40,6 @@ async def mantener(pg, selector, ms):
     caja = await (await pg.query_selector(selector)).bounding_box()
     await pg.mouse.move(caja["x"] + 20, caja["y"] + 10)
     await pg.mouse.down()
-    await pg.wait_for_timeout(ms)
+    await esperar(pg, ms)
     await pg.mouse.up()
-    await pg.wait_for_timeout(150)
+    await esperar(pg, 150)

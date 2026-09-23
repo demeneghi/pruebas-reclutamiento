@@ -2,7 +2,7 @@
 import asyncio
 import sys
 from playwright.async_api import async_playwright
-from comun import URL, iniciar, terminar_parte, mantener
+from comun import URL, iniciar, terminar_parte, mantener, reloj, esperar
 
 
 async def main():
@@ -17,11 +17,12 @@ async def main():
         ctx = await nav.new_context(viewport={"width": 390, "height": 844}, has_touch=True)
         pg = await ctx.new_page()
         pg.on("pageerror", lambda e: errores.append(str(e)))
+        await reloj(pg)
         await iniciar(pg, "Ana Ruiz")
         await pg.click("[data-act=startSeries]")
         for v in (3, 1, 2):
             await pg.click(f'[data-act=pick][data-ctx=real][data-v="{v}"]')
-            await pg.wait_for_timeout(400)
+            await esperar(pg, 400)
         await pg.reload()
         await pg.wait_for_timeout(300)
         comprobar(await pg.inner_text(".qnum") == "Pregunta 4 de 16", "no reanudó en la pregunta 4")
