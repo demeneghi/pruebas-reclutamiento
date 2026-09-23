@@ -1,6 +1,7 @@
 ---
 paths:
   - "pruebas/**/src/**"
+  - "motor/**"
 ---
 
 # Persistencia y seguridad

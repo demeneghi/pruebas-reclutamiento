@@ -1,6 +1,7 @@
 ---
 paths:
   - "pruebas/**/src/**"
+  - "motor/**"
 ---
 
 # Prompt de calificación

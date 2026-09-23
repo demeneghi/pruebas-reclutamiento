@@ -1,0 +1,41 @@
+name: Pruebas
+
+# En cada PR y en main: cada prueba.html debe ser exactamente lo que genera herramientas/construir.py
+# y deben pasar todas las pruebas de extremo a extremo (pruebas/*/tests y sitio/tests).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Instalar Playwright
+        run: |
+          pip install playwright==1.56.0
+          python -m playwright install --with-deps chromium
+
+      - name: Verificar construcción
+        run: python herramientas/construir.py --verificar
+
+      - name: Pruebas de extremo a extremo
+        run: |
+          set -euo pipefail
+          for t in pruebas/*/tests/test_*.py sitio/tests/test_*.py; do
+            echo "::group::$t"
+            python "$t"
+            echo "::endgroup::"
+          done
