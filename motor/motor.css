@@ -110,15 +110,15 @@ main.q{flex:1;padding:18px 16px 12px}
 .hint{font-size:.9em;color:var(--ink2);margin:-8px 0 18px}
 
 /* numeric answer */
-.ansline{display:flex;align-items:center;gap:12px;margin:0 0 16px;flex-wrap:wrap}
-.slot{min-width:150px;min-height:64px;padding:6px 16px;border:2px solid var(--line);border-radius:14px;background:var(--sheet);display:flex;align-items:center;justify-content:flex-end;font-size:1.6em;font-weight:700;font-variant-numeric:tabular-nums}
+.ansline{display:flex;align-items:center;gap:12px;margin:0 0 16px;flex-wrap:wrap;justify-content:center}
+.slot{min-width:150px;min-height:64px;padding:6px 16px;border:2px solid var(--line);border-radius:14px;background:var(--sheet);display:flex;align-items:center;justify-content:center;font-size:1.6em;font-weight:700;font-variant-numeric:tabular-nums}
 .slot.act{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
 .slot .caret{display:inline-block;width:2px;height:1.1em;background:var(--blue);margin-left:3px;animation:blink 1s steps(1) infinite}
 .slot .ph{color:var(--line);font-weight:400}
 @keyframes blink{50%{opacity:0}}
 .unit{font-size:1.1em;color:var(--ink2);font-weight:700}
-.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:420px;margin:6px auto 0}
-.keypad button{min-height:60px;border-radius:14px;border:2px solid var(--line);background:var(--sheet);font-size:1.5em;font-weight:700;font-variant-numeric:tabular-nums}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:460px;margin:6px auto 0}
+.keypad button{min-height:68px;border-radius:14px;border:2px solid var(--line);background:var(--sheet);font-size:1.6em;font-weight:700;font-variant-numeric:tabular-nums}
 .keypad button:active{background:var(--blue-soft);border-color:var(--blue)}
 .keypad button.fn{font-size:1em;color:var(--ink2)}
 .keypad button.ok{grid-column:1/-1;background:var(--blue);border-color:var(--blue);color:var(--on-accent);font-size:1.05em}
