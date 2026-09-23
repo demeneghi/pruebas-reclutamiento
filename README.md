@@ -26,6 +26,7 @@ La raíz https://demeneghi.github.io/pruebas-reclutamiento/ redirige a la prueba
 | `pruebas/<prueba>/fuentes/` | Material original |
 | `pruebas/<prueba>/docs/` | Decisiones, correcciones y pendientes |
 | `pruebas/<prueba>/tests/` | Pruebas de extremo a extremo con Playwright |
+| `marca/` | Logotipo original, SVG vectorizado y script que lo genera |
 | `sitio/` | Página raíz de GitHub Pages |
 | `.github/workflows/pages.yml` | Publicación en GitHub Pages |
 

@@ -5,12 +5,14 @@
 - Un solo HTML autocontenido para que funcione sin conexión en ranchos. Las fuentes (Atkinson Hyperlegible 400 y 700, subconjunto latino) van incrustadas en base64: distingue bien 0/O y 1/l, útil en series numéricas.
 - Metáfora de hoja de respuestas: fondo de cuadrícula tenue, opciones con burbuja que se rellena al elegir, acento amarillo lápiz. Solo modo claro, forzado con `color-scheme: light only`.
 - Una pregunta por pantalla, botones de al menos 56 px de alto, tipografía de 18 a 20 px.
-- Marca: encabezado de texto "Amador Russell, Reclutamiento y selección". No hay logotipo ni colores corporativos oficiales todavía.
+- Marca: encabezado de texto "Amador Russell, Reclutamiento y selección" en aplicador, final y resultados. En la bienvenida, el logotipo animado ocupa el lugar del nombre.
+- Logotipo: vectorizado desde `marca/logo-amador-russell.png` con `marca/vectorizar_logo.py` e incrustado en la constante `LOGO` (unos 11 KB). Sus colores (verde `#155750`, amarillo `#F9D408`) solo se usan en el logotipo; la paleta de la aplicación no cambia.
+- Animación del logotipo: unos 2.4 s, una sola vez al abrir la bienvenida y otra si se toca el logotipo. Solo usa transformaciones, opacidad y recortes; con "reducir movimiento" activado en el dispositivo se muestra fijo. No aparece durante las partes con tiempo.
 
 ## Flujo
 
 1. Pantalla del aplicador: nombre, edad, escolaridad, puesto, tipo de puesto (obligatorio), rancho o área (opcional), aplicador, con o sin tiempo límite.
-2. Bienvenida del candidato.
+2. Bienvenida del candidato: logotipo animado, saludo y cuatro reglas (partes, ejemplo, tiempo, no regresar).
 3. Por cada serie: introducción con ejemplo interactivo que no cuenta, preguntas, revisión con cuadrícula y cierre. Una serie cerrada no se puede reabrir.
 4. Pantalla final. Los resultados se abren manteniendo presionado un botón 1.5 s.
 5. Resultados: tabla resumen y prompt (copiar, compartir, descargar .txt).
