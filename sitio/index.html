@@ -93,8 +93,9 @@ h2{font-size:1.2em;margin:1.2em 0 .5em}
 .hist{display:grid;gap:8px}
 .hist button{display:flex;justify-content:space-between;gap:12px;align-items:center;min-height:56px;padding:8px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);text-align:left;font:inherit;color:inherit;cursor:pointer}
 .hist button span{color:var(--ink2);font-size:.85em}
-/* banda del candidato: visible todo el tiempo en el menú */
-.candidato{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--pencil-soft);border-bottom:2px solid var(--pencil)}
+/* banda del candidato: encabezado de todas las vistas del menú mientras hay sesión; se desplaza con la página
+   para no taparle nada al contenido */
+.candidato{display:flex;align-items:center;justify-content:space-between;gap:6px 12px;flex-wrap:wrap;padding:10px 16px;padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--pencil-soft);border-bottom:2px solid var(--pencil)}
 .candidato small{display:block;color:var(--warn);font-weight:700;font-size:.72em;letter-spacing:.04em;text-transform:uppercase}
 .candidato b{display:block;font-size:1.15em;line-height:1.2}
 .candidato .det{display:block;color:var(--ink2);font-size:.8em}
