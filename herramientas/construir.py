@@ -6,6 +6,8 @@ Piezas, en el orden en que quedan dentro del HTML:
 - pruebas/<prueba>/src/config.js: lo propio de la prueba (nombre, claves, series, textos del prompt).
 - marca/logo-amador-russell.svg: logotipo animado (constante LOGO).
 - pruebas/<prueba>/datos/reactivos.json y clave.json: reactivos (ITEMS) y clave ofuscada (KEY).
+- Opcionales: datos/ejemplos.json (EJEMPLOS, ejemplos de práctica por serie cuando no caben en config.js)
+  y datos/descripciones.json (DESC, regla y opciones en texto para el prompt, ofuscadas como la clave).
 - motor/sesion.js: sesión del candidato compartida con el menú de pruebas.
 - motor/motor.js: persistencia, flujo, calificación, prompt y eventos.
 
@@ -40,6 +42,10 @@ def constante_texto(config, nombre):
     return json.loads(m.group(1))
 
 
+def ofuscar(datos):
+    return base64.b64encode(json.dumps(datos, ensure_ascii=False).encode("utf-8")).decode("ascii")
+
+
 def construir(carpeta):
     config = leer(carpeta / "src" / "config.js")
     if constante_texto(config, "CARPETA") != carpeta.name:
@@ -54,7 +60,22 @@ def construir(carpeta):
         raise SystemExit("el SVG del logotipo debe ser una sola línea sin comillas simples")
 
     items = json.dumps(reactivos, ensure_ascii=False)
-    key = base64.b64encode(json.dumps(clave, ensure_ascii=False).encode("utf-8")).decode("ascii")
+    key = ofuscar(clave)
+    extra = []
+    ruta_ej = carpeta / "datos" / "ejemplos.json"
+    if ruta_ej.exists():
+        ejemplos = json.loads(leer(ruta_ej))
+        if not set(ejemplos) <= set(reactivos):
+            raise SystemExit(f"{carpeta.name}: ejemplos.json tiene series que no están en reactivos.json")
+        extra += ["/* Ejemplos de práctica de datos/ejemplos.json; no cuentan para la calificación. */",
+                  "const EJEMPLOS = " + json.dumps(ejemplos, ensure_ascii=False) + ";"]
+    ruta_desc = carpeta / "datos" / "descripciones.json"
+    if ruta_desc.exists():
+        desc = json.loads(leer(ruta_desc))
+        if list(desc) != list(reactivos) or any(len(desc[s]) != len(reactivos[s]) for s in reactivos):
+            raise SystemExit(f"{carpeta.name}: descripciones.json y reactivos.json no tienen las mismas series y cantidades")
+        extra += ["/* Descripciones de datos/descripciones.json para el prompt, ofuscadas como la clave. */",
+                  'const DESC = JSON.parse(decodeURIComponent(escape(atob("' + ofuscar(desc) + '"))));']
     datos = "\n".join([
         "/* Logotipo de marca/logo-amador-russell.svg; cada pieza tiene su clase lg-* para la animación de la bienvenida. */",
         "const LOGO = '" + logo + "';",
@@ -62,7 +83,7 @@ def construir(carpeta):
         "const ITEMS = " + items + ";",
         "/* Clave de datos/clave.json, ofuscada para que no quede legible en el HTML. */",
         'const KEY = JSON.parse(decodeURIComponent(escape(atob("' + key + '"))));',
-    ])
+    ] + extra)
     script = "\n".join([
         '"use strict";',
         "/* Generado por herramientas/construir.py. No lo edites a mano: cambia motor/, src/config.js, datos/ o marca/ y vuelve a construir. */",

@@ -15,6 +15,7 @@ Las reglas del repositorio están en `.claude/rules/` y aplican a todas las prue
 | Carpeta | Prueba | Estado |
 |---|---|---|
 | `pruebas/razonamiento-forma-b/` | Razonamiento General, Forma B (tipo Terman-Merrill, 10 series, 165 reactivos) | En uso; publicada en GitHub Pages (https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/) y como artefacto privado de Claude |
+| `pruebas/razonamiento-figuras/` | Razonamiento con Figuras, Forma A (no verbal, tipo matrices progresivas, 5 series, 60 reactivos propios generados en SVG) | Nueva; publicada en GitHub Pages (https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-figuras/) al entrar a `main`; tiempos pendientes de calibrar |
 
 Cada carpeta tiene su propio `CLAUDE.md` con el contexto específico.
 

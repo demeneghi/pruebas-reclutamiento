@@ -1,7 +1,8 @@
 /* ====== Motor común de las pruebas ======
    herramientas/construir.py lo coloca después de la configuración de cada prueba (src/config.js),
    que define TEST_NAME, CARPETA, CLAVE_BASE, MODES, BIENVENIDA, META, reglaTexto y PROMPT,
-   y de los datos incrustados LOGO (marca/), ITEMS y KEY (datos/). Nada de aquí es propio de una prueba. */
+   y de los datos incrustados LOGO (marca/), ITEMS y KEY (datos/), más EJEMPLOS y DESC si la prueba los trae.
+   Nada de aquí es propio de una prueba. */
 const COMPANY = "Amador Russell";
 const COMPANY_LEGAL = "Amador Russell SPR de RL";
 const COMPANY_DESC = "empresa agrícola productora de piña MD2 en Veracruz, México";
@@ -12,6 +13,10 @@ function totalFor(mode){return META.reduce((a,m)=>a+timeFor(m,mode),0);}
 const brand = () => '<div class="brand"><b>'+COMPANY+'</b><span>Reclutamiento y selección</span></div>';
 const brandLogo = () => '<div class="brand hero">'+LOGO+'<span>Reclutamiento y selección</span></div>';
 const LETTERS = "ABCDE";
+/* Ejemplo de práctica de la serie: en config.js (m.example) o, si no cabe ahí, en datos/ejemplos.json. */
+function ejemplo(m){return m.example||(typeof EJEMPLOS!=="undefined"&&EJEMPLOS[m.id])||null;}
+/* Regla y opciones en texto de un reactivo (datos/descripciones.json), para el prompt. */
+function desc(m,i){return typeof DESC!=="undefined"&&DESC[m.id]?DESC[m.id][i]:null;}
 
 /* ====== Persistencia ======
    - Cada cambio se guarda al instante en localStorage y se verifica leyéndolo de vuelta.
@@ -247,7 +252,7 @@ function intro(){
   (fsEnabled()?'<button class="btn quiet block" id="fsbtn" data-act="fullscreen" style="margin-top:8px'+(fsActive()?';display:none':'')+'">Pantalla completa</button>':'')+salirFila()+'</div>';
 }
 function exampleHTML(){
-  const m=meta(), e=m.example;
+  const m=meta(), e=ejemplo(m);
   let h='<div class="exhead">Ejemplo para practicar</div>'+qHTML(m,e,EX.v,"ex",EX.checked?e.key:undefined);
   const ready = m.type==="multi2"?EX.v.length===2 : m.type==="num"?EX.v!=="" : m.type==="series"?(EX.v[0]!==""&&EX.v[1]!==""):EX.v!=null;
   if(EX.checked){
@@ -290,6 +295,14 @@ function qHTML(m,it,v,ctx,showKey){
       const sel=v||[];
       const o=it.options.map((t,i)=>'<button class="'+cls(i,sel.includes(i))+' sq" data-act="toggle" data-ctx="'+ctx+'" data-v="'+i+'" aria-pressed="'+sel.includes(i)+'"><span class="bub">'+LETTERS[i]+'</span><span>'+esc(t)+'</span></button>').join("");
       return stem+'<p class="counter" id="cnt-'+ctx+'">Elegiste '+sel.length+' de 2</p><div class="opts">'+o+'</div>';
+    }
+    case "figura":{
+      /* Matriz (celdas, con null en la que falta) o lienzo con hueco, y opciones dibujadas en SVG numeradas desde 1. */
+      const svg=(c,vb)=>'<svg viewBox="'+(vb||"0 0 100 100")+'" aria-hidden="true" focusable="false">'+(c||"")+'</svg>';
+      const mat=it.lienzo?'<div class="lienzo">'+svg(it.lienzo,it.vista)+'</div>'
+        :'<div class="matriz m'+Math.round(Math.sqrt(it.celdas.length))+'">'+it.celdas.map(c=>c==null?'<div class="celda falta" role="img" aria-label="Casilla que falta">?</div>':'<div class="celda">'+svg(c)+'</div>').join("")+'</div>';
+      const o=it.opciones.map((t,i)=>'<button class="'+cls(i,v===i)+' fig" data-act="pick" data-ctx="'+ctx+'" data-v="'+i+'" aria-pressed="'+(v===i)+'" aria-label="Opción '+(i+1)+'"><span class="bub">'+(i+1)+'</span>'+svg(t)+'</button>').join("");
+      return mat+'<div class="figs n'+it.opciones.length+'">'+o+'</div>';
     }
     case "pair":{
       return '<div class="pair"><span class="w">'+esc(it.a)+'</span><span class="amp">y</span><span class="w">'+esc(it.b)+'</span></div>'+
@@ -387,11 +400,13 @@ function fmtProc(x,i,it){
   const r=lg[i];
   if(x.st[i]==="omitida") return (r&&r.d>0?"vista, sin respuesta":"no vista")+" | 0";
   if(!r||r.f==null) return "sin registro | sin registro";
-  return seg(r.f)+" | "+(r.c?r.c+" (primera: "+fmtAns(x.m,it,r.a)+")":"0");
+  return seg(r.f)+" | "+(r.c?r.c+" (primera: "+fmtAns(x.m,it,r.a,i)+")":"0");
 }
-function fmtAns(m,it,v){
+function fmtFig(m,i,v){const d=desc(m,i);return "opción "+(v+1)+(d&&d.opciones?" ("+d.opciones[v]+")":"");}
+function fmtAns(m,it,v,i){
   if(!isAnswered(m,v)) return "(sin respuesta)";
   switch(m.type){
+    case "figura": return fmtFig(m,i,v);
     case "single": return LETTERS[v].toLowerCase()+") "+it.options[v];
     case "multi2": return [...v].sort().map(i=>LETTERS[i].toLowerCase()+") "+it.options[i]).join(" + ")+(v.length<2?" (solo eligió una)":"");
     case "pair": return v===1?"Lo mismo":"Lo contrario";
@@ -401,8 +416,9 @@ function fmtAns(m,it,v){
     case "series": return (v[0]||"_")+", "+(v[1]||"_");
   }
 }
-function fmtKey(m,it,k){
+function fmtKey(m,it,k,i){
   switch(m.type){
+    case "figura": return fmtFig(m,i,k);
     case "single": return LETTERS[k].toLowerCase()+") "+it.options[k];
     case "multi2": return k.map(i=>LETTERS[i].toLowerCase()+") "+it.options[i]).join(" + ");
     case "pair": return k===1?"Lo mismo":"Lo contrario";
@@ -412,8 +428,9 @@ function fmtKey(m,it,k){
     case "series": return k.join(", ");
   }
 }
-function fmtStem(m,it){
+function fmtStem(m,it,i){
   switch(m.type){
+    case "figura": {const d=desc(m,i);return d&&d.regla?"regla: "+d.regla:"(figuras)";}
     case "pair": return it.a+" / "+it.b;
     case "scramble": return "«"+it.words.join(" ")+"»";
     case "series": return it.terms.join(" ")+" _ _";
@@ -468,10 +485,12 @@ function buildPrompt(sc){
     });
     L.push("");
   }
-  L.push("## Respuestas reactivo por reactivo","Formato: reactivo | enunciado [opciones] | respuesta del candidato | clave | resultado | primera respuesta | cambios de respuesta. Las letras corresponden al orden en que se mostraron las opciones.","");
+  L.push("## Respuestas reactivo por reactivo",META.some(m=>m.type==="figura")
+    ?"Formato: reactivo | regla que resuelve el reactivo | respuesta del candidato | clave | resultado | primera respuesta | cambios de respuesta. Las opciones se numeran desde 1 en el orden en que se mostraron; entre paréntesis va la descripción de la figura elegida."
+    :"Formato: reactivo | enunciado [opciones] | respuesta del candidato | clave | resultado | primera respuesta | cambios de respuesta. Las letras corresponden al orden en que se mostraron las opciones.","");
   sc.forEach(x=>{
     L.push("### Serie "+x.m.id+": "+x.m.name);
-    ITEMS[x.m.id].forEach((it,i)=>L.push(x.m.id+"-"+String(i+1).padStart(2,"0")+" | "+fmtStem(x.m,it)+" | "+fmtAns(x.m,it,x.arr[i])+" | "+fmtKey(x.m,it,KEY[x.m.id][i])+" | "+x.st[i]+" | "+fmtProc(x,i,it)));
+    ITEMS[x.m.id].forEach((it,i)=>L.push(x.m.id+"-"+String(i+1).padStart(2,"0")+" | "+fmtStem(x.m,it,i)+" | "+fmtAns(x.m,it,x.arr[i],i)+" | "+fmtKey(x.m,it,KEY[x.m.id][i],i)+" | "+x.st[i]+" | "+fmtProc(x,i,it)));
     L.push("");
   });
   L.push(...PROMPT.tareas);
@@ -619,6 +638,10 @@ document.addEventListener("keydown",e=>{
     let k=null;if(/^[0-9]$/.test(e.key))k=e.key;else if(e.key==="."||e.key===",")k=".";else if(e.key==="Backspace")k="del";else if(e.key==="Enter")k="ok";
     if(k){e.preventDefault();keyInput(S.phase==="intro"?"ex":"real",k);return;}
     if(m.type==="series"&&e.key==="Tab"&&S.phase==="item"){e.preventDefault();SLOT=SLOT?0:1;render();return;}
+  }
+  if(m.type==="figura"&&/^[1-8]$/.test(e.key)){
+    const b=document.querySelector('[data-act=pick][data-ctx="'+(S.phase==="intro"?"ex":"real")+'"][data-v="'+(+e.key-1)+'"]');
+    if(b){e.preventDefault();b.click();return;}
   }
   if(S.phase==="item"){
     if(e.key==="ArrowRight"||e.key==="Enter"){e.preventDefault();advanceTok++;next();}
