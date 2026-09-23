@@ -52,6 +52,9 @@ async def main():
         async with async_playwright() as p:
             nav = await p.chromium.launch()
             ctx = await nav.new_context(viewport={"width": 390, "height": 844}, has_touch=True)
+            # Sin Google Fonts: el menú debe funcionar igual con la fuente del sistema y sin depender de internet.
+            await ctx.route("https://fonts.googleapis.com/**", lambda r: r.abort())
+            await ctx.route("https://fonts.gstatic.com/**", lambda r: r.abort())
             pg = await ctx.new_page()
             pg.on("pageerror", lambda e: errores.append(str(e)))
 
