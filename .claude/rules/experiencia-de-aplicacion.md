@@ -7,7 +7,8 @@ paths:
 
 ## Formato
 
-- Cada prueba es un solo HTML autocontenido que funciona sin red: CSS, JS, fuentes (base64) y datos incrustados. Sin CDNs ni recursos remotos.
+- Cada prueba es un solo HTML con su CSS, JS y datos. Una vez abierta no depende de la red: respuestas, reloj, guardado y prompt funcionan sin conexión.
+- Fuentes, imágenes y bibliotecas pueden venir de CDN. Las fuentes se cargan sin bloquear la página (`media="print" onload="this.media='all'"` y `display=swap`) para que una red lenta no retrase la prueba; si no cargan, se usa la fuente del sistema. Si la prueba también se publica como artefacto de Claude, usa solo orígenes que el artefacto permita: Google Fonts para fuentes, cdnjs.cloudflare.com o cdn.jsdelivr.net para bibliotecas, e imágenes incrustadas.
 - Diseñada primero para teléfono y tablet: una pregunta por pantalla, objetivos táctiles de al menos 56 px, texto base de 18 a 20 px.
 - Tipografía Atkinson Hyperlegible. Estética de hoja de respuestas: fondo de cuadrícula tenue, burbujas que se rellenan, acento amarillo lápiz. Solo modo claro (`color-scheme: light only`).
 - Encabezado de marca "Amador Russell, Reclutamiento y selección" en las pantallas del aplicador, bienvenida, final y resultados. En la bienvenida, el logotipo animado (`LOGO`, generado desde `marca/`) ocupa el lugar del nombre.

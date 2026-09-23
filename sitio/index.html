@@ -2,19 +2,110 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F9FBFE">
 <meta name="color-scheme" content="light only">
 <meta name="robots" content="noindex, nofollow">
-<meta http-equiv="refresh" content="0; url=razonamiento-forma-b/">
-<title>Amador Russell, Reclutamiento y selección</title>
-<script>location.replace("razonamiento-forma-b/");</script>
+<title>Amador Russell, pruebas de reclutamiento</title>
+<!-- Fuente desde Google Fonts sin bloquear la página: si la red falla, se ve con la del sistema. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&amp;display=swap" media="print" onload="this.media='all'">
 <style>
-body{margin:0;padding:24px 16px;background:#F9FBFE;color:#1C2633;font:18px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-a{display:inline-block;margin-top:16px;padding:16px 24px;border-radius:16px;background:#2447B8;color:#FFFFFF;text-decoration:none;font-weight:700}
+:root{
+  --paper:#F9FBFE; --grid:#E6ECF4; --sheet:#FFFFFF;
+  --ink:#1C2633; --ink2:#4E596A; --line:#C9D3E1;
+  --blue:#2447B8; --blue-d:#1B3690; --blue-soft:#EAF0FC;
+  --pencil:#F2C230; --pencil-soft:#FFF4CC; --pencil-d:#C99A00;
+  --bad:#B42318; --bad-soft:#FDECEA; --warn:#A45A00;
+  --fs:18px;
+  color-scheme:light only;
+}
+@media (min-width:700px){:root{--fs:20px}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;min-height:100vh;font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:var(--fs);line-height:1.45;color:var(--ink);
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;-webkit-text-size-adjust:100%}
+:focus-visible{outline:3px solid var(--pencil);outline-offset:2px}
+.app{max-width:780px;margin:0 auto}
+.sheet{background:var(--sheet);border:1px solid var(--line);border-radius:22px;padding:22px 20px;margin:16px 14px;box-shadow:0 1px 0 var(--line)}
+@media (min-width:700px){.sheet{padding:34px 38px;margin:28px 24px}}
+.brand{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;padding-bottom:12px;margin-bottom:16px;border-bottom:2px solid var(--pencil)}
+.brand b{font-size:1.05em;letter-spacing:.01em}
+.brand span{font-size:.8em;color:var(--ink2)}
+h1{font-size:1.65em;line-height:1.15;margin:0 0 .5em;font-weight:700;letter-spacing:-.01em}
+p{margin:0 0 .8em}
+.muted{color:var(--ink2)}
+.small{font-size:.85em}
+.notice{border:2px solid var(--pencil);background:var(--pencil-soft);border-radius:14px;padding:14px 16px;margin-bottom:18px}
+.notice.bad{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.notice p:last-child{margin:0}
+.pruebas{display:grid;gap:12px;margin:18px 0 20px}
+.prueba{display:block;padding:16px 16px 14px;border:2px solid var(--line);border-radius:16px;background:var(--sheet);color:inherit;text-decoration:none}
+.prueba:active{border-color:var(--blue);background:var(--blue-soft)}
+.prueba .nom{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.prueba .nom b{font-size:1.2em;line-height:1.2}
+.prueba .forma{font-size:.8em;color:var(--ink2);border:1px solid var(--line);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.prueba .desc{display:block;color:var(--ink2);margin:6px 0 10px;line-height:1.35}
+.datos{display:flex;gap:8px;flex-wrap:wrap}
+.dato{border:1px solid var(--line);border-radius:12px;padding:6px 12px;background:var(--sheet);font-size:.85em}
+.dato b{font-size:1.1em}
+.abrir{display:flex;align-items:center;justify-content:center;min-height:56px;margin-top:14px;border-radius:14px;background:var(--blue);color:#FFFFFF;font-weight:700}
+.prueba:active .abrir{background:var(--blue-d)}
+.encurso{display:none;margin-top:12px;padding:6px 12px;border-radius:10px;background:var(--pencil-soft);border:2px solid var(--pencil);color:var(--warn);font-weight:700;font-size:.9em}
+.prueba.activa{border-color:var(--pencil-d)}
+.prueba.activa .encurso{display:block}
 </style>
 </head>
 <body>
-<p>Amador Russell, Reclutamiento y selección</p>
-<a href="razonamiento-forma-b/">Abrir la prueba de razonamiento general</a>
+<div class="app">
+<div class="sheet">
+<div class="brand"><b>Amador Russell</b><span>Reclutamiento y selección</span></div>
+<p class="muted small">Pantalla para quien aplica la prueba</p>
+<h1>¿Qué prueba vas a aplicar?</h1>
+<div id="avisos"></div>
+<p class="muted">Tócala para abrirla. En la siguiente pantalla llenas los datos del candidato.</p>
+
+<!-- Una tarjeta por prueba. data-claves: claves de localStorage de la prueba en curso (principal y respaldo). -->
+<nav class="pruebas" aria-label="Pruebas disponibles">
+<a class="prueba" href="razonamiento-forma-b/" data-claves="rgFormaB.v1 rgFormaB.v1.respaldo">
+<span class="nom"><b>Razonamiento general</b><span class="forma">Forma B</span></span>
+<span class="desc">Mide cómo razona el candidato con palabras y números. Para todo tipo de puesto.</span>
+<span class="datos"><span class="dato"><b>10</b> partes</span><span class="dato"><b>29</b> min estándar</span><span class="dato"><b>37</b> min extendida</span></span>
+<span class="encurso">Hay una aplicación en curso en este dispositivo</span>
+<span class="abrir">Abrir esta prueba</span>
+</a>
+</nav>
+
+<p class="small muted">Usa siempre este mismo enlace en cada dispositivo: el avance y los resultados se guardan en el navegador.</p>
+</div>
+</div>
+<script>
+"use strict";
+/* Si hay una prueba a medio aplicar en este dispositivo, la raíz la reabre sola:
+   el candidato nunca debe quedar frente al menú a mitad de una prueba, ni al tocar "atrás"
+   (por eso también se revisa en pageshow, cuando el navegador restaura la página de su caché).
+   Solo se lee la fase del estado guardado; nunca se escribe ni se muestra nada del candidato. */
+function revisar(){
+  const EN_CURSO = ["welcome","intro","item","review","timeout"];
+  function fase(claves){
+    for(const k of claves){
+      try{const o=JSON.parse(localStorage.getItem(k));if(o&&typeof o==="object"&&typeof o.phase==="string")return o.phase;}catch(e){}
+    }
+    return null;
+  }
+  const activas=[...document.querySelectorAll(".prueba")].filter(a=>EN_CURSO.includes(fase(a.dataset.claves.split(" "))));
+  if(activas.length===1){location.replace(activas[0].href);return;}
+  document.querySelectorAll(".prueba").forEach(a=>a.classList.toggle("activa",activas.includes(a)));
+  const avisos=[];
+  if(activas.length>1) avisos.push('<div class="notice"><p><b>Hay '+activas.length+' pruebas en curso en este dispositivo.</b> Abre la marcada que corresponda para continuarla.</p></div>');
+  if(/; wv\)|Telegram|FBAN|FBAV|Instagram|WhatsApp|Line\//i.test(navigator.userAgent||"")) avisos.push('<div class="notice bad"><p><b>Estás dentro del navegador de otra aplicación.</b> Puede borrar el avance al cerrarse. Para aplicar la prueba ábrela en Chrome o Safari.</p></div>');
+  document.getElementById("avisos").innerHTML=avisos.join("");
+}
+revisar();
+window.addEventListener("pageshow",e=>{if(e.persisted)revisar();});
+</script>
 </body>
 </html>

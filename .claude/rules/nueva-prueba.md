@@ -8,4 +8,5 @@
 6. Usa claves de localStorage propias de la prueba para que las pruebas no compartan estado.
 7. Escribe las pruebas automatizadas de `pruebas-automatizadas.md`.
 8. Agrega la prueba al índice del `CLAUDE.md` raíz y del `README.md`.
-9. La aplicación se llama `src/prueba.html`: así el workflow de Pages la publica sola en `<nombre>/`. Con dos o más pruebas, cambia `sitio/index.html` de redirección a menú de pruebas.
+9. La aplicación se llama `src/prueba.html`: así el workflow de Pages la publica sola en `<nombre>/`. Define en ella `CARPETA` con el nombre de la carpeta.
+10. Agrega su tarjeta al menú de `sitio/index.html`: enlace `<nombre>/`, claves principal y de respaldo en `data-claves`, partes y duración por modalidad. `sitio/tests/test_selector.py` falla si una prueba publicada no está en el menú.

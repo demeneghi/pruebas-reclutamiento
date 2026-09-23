@@ -26,10 +26,13 @@ Cada carpeta tiene su propio `CLAUDE.md` con el contexto específico.
 
 `.github/workflows/pages.yml` publica en GitHub Pages cada `pruebas/<prueba>/src/prueba.html` como `<prueba>/index.html`, más `sitio/index.html` en la raíz. Nada más del repositorio llega al sitio.
 
+`sitio/index.html` es el menú de pruebas: una tarjeta por prueba, escrita a mano. Si el dispositivo tiene una aplicación en curso, la raíz la reabre sola. Cada prueba define `CARPETA` para ofrecer "Cambiar de prueba" en la pantalla del aplicador cuando se sirve desde Pages.
+
 ## Comandos
 
 ```bash
 pip install playwright && python -m playwright install chromium
 python pruebas/razonamiento-forma-b/tests/test_flujo_completo.py
 python pruebas/razonamiento-forma-b/tests/test_persistencia.py
+python sitio/tests/test_selector.py
 ```
