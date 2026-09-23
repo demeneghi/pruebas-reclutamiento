@@ -13,10 +13,12 @@ La raíz https://demeneghi.github.io/pruebas-reclutamiento/ muestra el menú de 
 ## Uso rápido
 
 1. Abre la raíz del sitio en Chrome o Safari, no dentro de Telegram, WhatsApp u otra app. Usa siempre el mismo enlace en cada dispositivo: el historial se guarda por sitio.
-2. El aplicador elige la prueba, captura los datos del candidato y el tipo de puesto, y entrega el dispositivo.
-3. Al terminar, el aplicador mantiene presionado el botón de resultados y copia el prompt.
-4. Para un candidato nuevo, en el menú mantén presionado "Preparar para un candidato nuevo": lo pendiente se archiva en el historial y todas las pruebas abren en la pantalla de captura.
-5. Para salir de una prueba a medias, mantén presionado 3 s el botón "Salir" y elige "Volver al menú de pruebas". La aplicación queda cancelada en el historial.
+2. Captura los datos del candidato una sola vez. Desde ese momento su nombre aparece arriba del menú.
+3. Elige la prueba y entrega el dispositivo. La prueba empieza en la bienvenida del candidato.
+4. Al terminar, mantén presionado "volver al menú de pruebas" y elige la siguiente prueba.
+5. En el menú, mantén presionado "ver resultados y prompt": anota incidencias por prueba y copia un solo prompt con todas las pruebas del candidato.
+6. Mantén presionado "terminar con este candidato": sus resultados quedan en "Candidatos anteriores" y el menú queda listo para el siguiente.
+7. Para salir de una prueba a medias, mantén presionado 3 s el botón "Salir" y elige "Volver al menú de pruebas". La aplicación queda cancelada y se puede aplicar de nuevo.
 
 ## Estructura
 

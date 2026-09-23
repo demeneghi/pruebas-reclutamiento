@@ -11,12 +11,12 @@
 
 ## Flujo
 
-1. Pantalla del aplicador: nombre, edad, escolaridad, años desde que dejó la escuela (opcional), uso de teléfono o tablet (opcional), puesto, tipo de puesto (obligatorio), rancho o área (opcional), aplicador, con o sin tiempo límite.
+1. Datos del candidato: nombre, edad, escolaridad, años desde que dejó la escuela (opcional), uso de teléfono o tablet (opcional), puesto, tipo de puesto (obligatorio), rancho o área (opcional), aplicador, con o sin tiempo límite. En Pages se capturan una vez en el menú de pruebas y la prueba los toma de la sesión; como archivo suelto o artefacto, en la pantalla del aplicador de la prueba.
 2. Bienvenida del candidato: logotipo animado, saludo y cuatro reglas (partes, ejemplo, tiempo, no regresar).
 3. Por cada serie: introducción con ejemplo interactivo que no cuenta, preguntas, revisión con cuadrícula y cierre. Una serie cerrada no se puede reabrir.
    - Pantalla completa: se pide sola al tocar "Comenzar". Si el candidato sale de ella, la introducción de cada serie muestra el botón "Pantalla completa" para volver; no aparece durante las preguntas para no distraer con el reloj corriendo. Donde el navegador no la permite (Safari de iPhone, o una página incrustada que la bloquee) el botón no se muestra.
-4. Pantalla final. Los resultados se abren manteniendo presionado un botón 1.5 s.
-5. Resultados: tabla resumen, campo de incidencias del aplicador y prompt (copiar, compartir, descargar .txt). Las incidencias actualizan el prompt al escribirlas y se guardan con la aplicación, también al editarlas desde el historial.
+4. Pantalla final. En Pages, el aplicador mantiene presionado un botón 1.5 s para volver al menú; la prueba ya registró en la sesión su resultado y su prompt. Como archivo suelto, el mismo gesto abre los resultados.
+5. Resultados: en Pages, en el menú, con incidencias por prueba y un solo prompt de todas las pruebas del candidato. Como archivo suelto, en la prueba: tabla resumen, incidencias y prompt (copiar, compartir, descargar .txt). Las incidencias actualizan el prompt al escribirlas y se guardan.
 
 ## Respuesta y avance
 
@@ -82,7 +82,7 @@ Incluye rol, contexto de la empresa, datos y condiciones de la aplicación con l
 
 - GitHub Pages: https://demeneghi.github.io/pruebas-reclutamiento/razonamiento-forma-b/. El workflow `.github/workflows/pages.yml` publica solo `src/prueba.html`; `datos/`, `fuentes/` y `docs/` no llegan al sitio. La página lleva `noindex` para que los buscadores no la listen.
 - El sitio de Pages es público aunque el repositorio sea privado. La clave viaja ofuscada en base64 dentro del HTML, aceptable solo para aplicación presencial con el dispositivo en manos del aplicador.
-- Todas las páginas de Pages de la cuenta comparten el origen `demeneghi.github.io` y, por tanto, el localStorage: no publicar en esa cuenta páginas de terceros ni código que lea el almacenamiento. Única excepción: el menú de la raíz (`sitio/index.html`) lee `rgFormaB.v1` y su respaldo para reabrir una aplicación en curso. Con "Preparar para un candidato nuevo" (pulsación larga de 3 s y confirmación) archiva en `rgFormaB.v1.historial` la aplicación pendiente, cancelada si no estaba terminada y con el reloj de la parte abierta cerrado en su hora límite si ya venció. Solo después de verificar el archivo borra el estado. El historial no se borra; la confirmación muestra el nombre del candidato.
+- Todas las páginas de Pages de la cuenta comparten el origen `demeneghi.github.io` y, por tanto, el localStorage: no publicar en esa cuenta páginas de terceros ni código que lea el almacenamiento. Única excepción: el menú de la raíz (`sitio/index.html`). Lee `rgFormaB.v1` y su respaldo para reabrir una aplicación en curso, y archiva y limpia aplicaciones sobrantes al capturar o terminar con un candidato, con el reloj de la parte abierta cerrado en su hora límite si ya venció. También guarda la sesión del candidato (`arSesion.v1`) con el resultado y el prompt de cada prueba.
 - La pantalla del aplicador ofrece "Cambiar de prueba" (enlace a `../`) solo cuando la ruta termina en `/razonamiento-forma-b/` (constante `CARPETA`); en el artefacto o como archivo local no aparece.
 - Artefacto privado de Claude. Las descargas usan la capacidad `claude.use("downloads")` y, fuera de Claude, un enlace de descarga normal.
 - El historial depende del dominio: un dispositivo que aplicó desde el artefacto no ve ese historial en Pages, y viceversa. Cada dispositivo usa un solo enlace.

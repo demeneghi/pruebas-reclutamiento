@@ -19,10 +19,12 @@ paths:
 
 ## Flujo obligatorio
 
-1. Pantalla del aplicador con datos del candidato, tipo de puesto obligatorio y modalidad de tiempo.
-2. Bienvenida del candidato con reglas claras (partes, ejemplos, tiempo, no regresar a partes cerradas).
+1. Menú de pruebas: el aplicador captura una sola vez los datos del candidato, el tipo de puesto (obligatorio) y la modalidad de tiempo. Mientras dure la sesión, el menú muestra siempre el nombre del candidato; durante la prueba no se muestra fuera del saludo.
+2. El aplicador elige la prueba. La prueba toma al candidato de la sesión y empieza en la bienvenida, con reglas claras (partes, ejemplos, tiempo, no regresar a partes cerradas).
 3. Por serie: introducción con ejemplo interactivo que no cuenta, preguntas, revisión con cuadrícula y cierre confirmado.
-4. Pantalla final sin resultados; los resultados solo se abren con pulsación larga del aplicador.
+4. Pantalla final sin resultados. El aplicador vuelve al menú con pulsación larga y elige la siguiente prueba.
+5. Resultados y un solo prompt con todas las pruebas del candidato, en el menú, tras pulsación larga del aplicador.
+6. Abierta como archivo suelto o artefacto (sin menú), la prueba conserva su propia pantalla de captura y de resultados.
 
 ## Respuesta
 
