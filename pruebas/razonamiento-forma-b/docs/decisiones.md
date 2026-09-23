@@ -6,7 +6,7 @@
 - Metáfora de hoja de respuestas: fondo de cuadrícula tenue, opciones con burbuja que se rellena al elegir, acento amarillo lápiz. Solo modo claro, forzado con `color-scheme: light only`.
 - Una pregunta por pantalla, botones de al menos 56 px de alto, tipografía de 18 a 20 px.
 - Marca: encabezado de texto "Amador Russell, Reclutamiento y selección" en aplicador, final y resultados. En la bienvenida, el logotipo animado ocupa el lugar del nombre.
-- Logotipo: vectorizado desde `marca/logo-amador-russell.png` con `marca/vectorizar_logo.py` e incrustado en la constante `LOGO` (unos 11 KB). Sus colores (verde `#155750`, amarillo `#F9D408`) solo se usan en el logotipo; la paleta de la aplicación no cambia.
+- Logotipo: vectorizado desde `marca/logo-amador-russell.png` con `marca/vectorizar_logo.py` e incrustado por `herramientas/construir.py` en la constante `LOGO` (unos 11 KB). Sus colores (verde `#155750`, amarillo `#F9D408`) solo se usan en el logotipo; la paleta de la aplicación no cambia.
 - Animación del logotipo: unos 2.4 s, una sola vez al abrir la bienvenida y otra si se toca el logotipo. Solo usa transformaciones, opacidad y recortes; con "reducir movimiento" activado en el dispositivo se muestra fijo. No aparece durante las partes con tiempo.
 
 ## Flujo

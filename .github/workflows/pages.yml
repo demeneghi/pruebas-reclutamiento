@@ -7,7 +7,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "pruebas/*/src/prueba.html"
+      - "pruebas/*/src/**"
+      - "pruebas/*/datos/**"
+      - "motor/**"
+      - "herramientas/**"
+      - "marca/logo-amador-russell.svg"
       - "sitio/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -29,6 +33,10 @@ jobs:
       url: ${{ steps.despliegue.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
+
+      # Nunca publicar un prueba.html editado a mano o sin reconstruir.
+      - name: Verificar construcción
+        run: python3 herramientas/construir.py --verificar
 
       - name: Armar sitio
         run: |

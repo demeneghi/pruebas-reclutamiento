@@ -23,14 +23,17 @@ La raíz https://demeneghi.github.io/pruebas-reclutamiento/ muestra el menú de 
 | Ruta | Contenido |
 |---|---|
 | `.claude/rules/` | Reglas que Claude Code respeta en todas las pruebas |
-| `pruebas/<prueba>/src/` | Aplicación, fuente de verdad |
-| `pruebas/<prueba>/datos/` | Reactivos y clave en JSON |
+| `pruebas/<prueba>/src/` | `config.js` con lo propio de la prueba y `prueba.html` generado |
+| `pruebas/<prueba>/datos/` | Reactivos y clave en JSON, fuente de verdad |
 | `pruebas/<prueba>/fuentes/` | Material original |
 | `pruebas/<prueba>/docs/` | Decisiones, correcciones y pendientes |
 | `pruebas/<prueba>/tests/` | Pruebas de extremo a extremo con Playwright |
+| `motor/` | Plantilla, estilos y lógica comunes a todas las pruebas |
+| `herramientas/construir.py` | Genera cada `prueba.html`; `--verificar` confirma que está al día |
 | `marca/` | Logotipo original, SVG vectorizado y script que lo genera |
 | `sitio/` | Menú de pruebas en la raíz de GitHub Pages y su prueba automatizada |
 | `.github/workflows/pages.yml` | Publicación en GitHub Pages |
+| `.github/workflows/pruebas.yml` | Construcción y pruebas automatizadas en cada PR |
 
 ## Publicación
 

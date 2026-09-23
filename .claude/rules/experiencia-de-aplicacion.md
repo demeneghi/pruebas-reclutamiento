@@ -1,6 +1,7 @@
 ---
 paths:
   - "pruebas/**/src/**"
+  - "motor/**"
 ---
 
 # Experiencia de aplicación
@@ -8,6 +9,7 @@ paths:
 ## Formato
 
 - Cada prueba es un solo HTML con su CSS, JS y datos. Una vez abierta no depende de la red: respuestas, reloj, guardado y prompt funcionan sin conexión.
+- `src/prueba.html` se genera con `python herramientas/construir.py` a partir de `motor/` (común a todas las pruebas), `src/config.js` (lo propio de la prueba), `datos/` y `marca/`. Nunca se edita a mano: el cambio va a su fuente y después se reconstruye.
 - Fuentes, imágenes y bibliotecas pueden venir de CDN. Las fuentes se cargan sin bloquear la página (`media="print" onload="this.media='all'"` y `display=swap`) para que una red lenta no retrase la prueba; si no cargan, se usa la fuente del sistema. Si la prueba también se publica como artefacto de Claude, usa solo orígenes que el artefacto permita: Google Fonts para fuentes, cdnjs.cloudflare.com o cdn.jsdelivr.net para bibliotecas, e imágenes incrustadas.
 - Diseñada primero para teléfono y tablet: una pregunta por pantalla, objetivos táctiles de al menos 56 px, texto base de 18 a 20 px.
 - Tipografía Atkinson Hyperlegible. Estética de hoja de respuestas: fondo de cuadrícula tenue, burbujas que se rellenan, acento amarillo lápiz. Solo modo claro (`color-scheme: light only`).
