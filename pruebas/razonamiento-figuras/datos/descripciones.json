@@ -50,7 +50,7 @@
     "hileras intercambiadas (cuadros donde van círculos)",
     "columnas en lugar de hileras",
     "solo cuadros",
-    "figuras corridas medio espacio",
+    "figuras más chicas y más juntas",
     "continúa el patrón sin cortes",
     "solo círculos"
    ]
@@ -60,7 +60,7 @@
    "opciones": [
     "cuadrícula recta",
     "vacía",
-    "rombos corridos medio rombo",
+    "rombos más grandes",
     "rombos más chicos",
     "puntos",
     "continúa el patrón sin cortes"

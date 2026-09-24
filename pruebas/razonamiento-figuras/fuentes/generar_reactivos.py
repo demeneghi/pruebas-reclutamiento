@@ -687,15 +687,15 @@ def p_anillos_sueltos(sep=20):
     return prims
 
 
-def p_filas(sep=24, cual=("circulo", "cuadrado")):
+def p_filas(sep=24, cual=("circulo", "cuadrado"), t=6):
     prims = []
     for k, y in enumerate(rango(EXT[1], EXT[3], sep)):
         tipo = cual[k % len(cual)]
         for x in rango(EXT[0], EXT[2], sep):
             if tipo == "circulo":
-                prims.append(("circulo", x, y, 6, False, 2.5))
+                prims.append(("circulo", x, y, t, False, 2.5))
             else:
-                prims.append(("rect", x - 6, y - 6, 12, 12, False))
+                prims.append(("rect", x - t, y - t, 2 * t, 2 * t, False))
     return prims
 
 
@@ -869,12 +869,12 @@ def serie_a(rng, pos):
     it.append(textura("A05", fi, 190, 50, [
         ("hileras intercambiadas (cuadros donde van círculos)", None, ("mover", 0, 24)), ("solo círculos", p_filas(cual=("circulo",)), None),
         ("columnas en lugar de hileras", None, ("girar", 90)), ("solo cuadros", p_filas(cual=("cuadrado",)), None),
-        ("figuras corridas medio espacio", None, ("mover", 12, 0))],
+        ("figuras más chicas y más juntas", p_filas(sep=15, t=3.5), None)],
         "Hileras que alternan: una de círculos, una de cuadros; las figuras quedan una debajo de otra.", rng, pos[4]))
     ro = p_rombos()
     it.append(textura("A06", ro, 112, 62, [
         ("cuadrícula recta", p_cuadricula(28), None), ("rombos más chicos", p_rombos(24), None),
-        ("rombos corridos medio rombo", None, ("mover", 20, 0)), ("puntos", p_puntos(), None), ("vacía", None, ("vacio",))],
+        ("rombos más grandes", p_rombos(64), None), ("puntos", p_puntos(), None), ("vacía", None, ("vacio",))],
         "Red de líneas diagonales cruzadas que forman rombos.", rng, pos[5]))
     an = p_anillos()
     it.append(textura("A07", an, 204, 60, [
