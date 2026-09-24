@@ -74,10 +74,14 @@ p{margin:0 0 .8em}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:max-content;max-width:calc(100% - 32px);background:var(--ink);color:var(--paper);padding:12px 18px;border-radius:12px;font-weight:700;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 /* captura */
-label.f{display:block;margin:0 0 16px}
+/* Etiqueta arriba y caja abajo: en un renglón de dos campos las cajas quedan alineadas aunque una etiqueta ocupe dos líneas. */
+label.f{display:flex;flex-direction:column;margin:0 0 16px}
 label.f span{display:block;font-weight:700;margin-bottom:6px;font-size:.92em}
 label.f input,label.f select,label.f textarea{width:100%;min-height:54px;padding:10px 14px;border:2px solid var(--line);border-radius:12px;background:var(--sheet);font:inherit;color:inherit}
 label.f input:focus,label.f select:focus,label.f textarea:focus{border-color:var(--blue);outline:none}
+label.f input,label.f select{margin-top:auto}
+/* Flecha propia en las listas: la del navegador es chica y queda pegada a la orilla. */
+label.f select{-webkit-appearance:none;appearance:none;padding-right:48px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234E596A' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:20px}
 .fila{display:flex;gap:0 12px;flex-wrap:wrap}
 .fila>label.f{flex:1 1 200px}
 .etq{font-weight:700;margin-bottom:6px;font-size:.92em}
